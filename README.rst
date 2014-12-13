@@ -48,4 +48,4 @@ Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Written by David McClosky (`homepage <http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
 
-Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PySD`_
+Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PySD/issues>`_

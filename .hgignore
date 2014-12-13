@@ -1,0 +1,8 @@
+glob:*.sw[op]
+glob:*.orig
+glob:tags
+glob:TAGS
+glob:*.py[co]
+glob:build*
+glob:dist*
+glob:MANIFEST

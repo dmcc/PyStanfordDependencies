@@ -1,0 +1,8 @@
+*.sw[op]
+*.orig
+tags
+TAGS
+*.py[co]
+build*
+dist*
+MANIFEST

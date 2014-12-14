@@ -31,7 +31,8 @@ you and store it in locally. You can request a specific version with the
 
 This tells you that ``moose`` is the head of the sentence and is modified
 by ``some`` (with a ``det`` = determiner relation) and ``blue`` (with an
-``amod`` = adjective modifier relation).
+``amod`` = adjective modifier relation). Fields on tokens are accessible
+(for reading and writing) as attributes.
 
 Backends
 --------
@@ -41,6 +42,9 @@ Currently PyStanfordDependencies includes two backends:
 - JPype (requires `jpype1 <https://pypi.python.org/pypi/JPype1/0.5.7>`_
   from PyPI, faster than Subprocess, includes access to the Stanford
   CoreNLP lemmatizer)
+
+By default, it will attempt to use the `jpype` backend and fallback to
+`subprocess` with a warning.
 
 More information
 ----------------

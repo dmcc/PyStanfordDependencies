@@ -95,10 +95,10 @@ class StanfordDependencies:
         return jar_filename
     def download_if_missing(self, version=None, verbose=True):
         """Download the jar for version into the jar_filename specified
-        in the constructor. Will not overwrite jar_filename if it
-        already exists. version defaults to DEFAULT_CORENLP_VERSION
-        (ideally the latest but we can't guarantee that since PySD is
-        distributed separately)."""
+        in the constructor. Will not overwrite jar_filename if it already
+        exists. version defaults to DEFAULT_CORENLP_VERSION (ideally the
+        latest but we can't guarantee that since PyStanfordDependencies
+        is distributed separately)."""
         import os.path
         if not os.path.exists(self.jar_filename):
             jar_url = self.get_jar_url(version)

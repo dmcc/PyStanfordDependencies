@@ -1,4 +1,4 @@
-PySD
+PyStanfordDependencies
 Copyright 2014 David McClosky
 
 This code makes use of Stanford CoreNLP, available from http://nlp.stanford.edu/software/corenlp.shtml

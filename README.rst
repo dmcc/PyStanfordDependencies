@@ -1,5 +1,5 @@
-PySD
-====
+PyStanfordDependencies
+======================
 
 Python interface for converting Penn Treebank trees to `Stanford Dependencies <http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.
 
@@ -14,12 +14,12 @@ This can take some options. ``backend`` can currently be ``subprocess``
 or ``jpype`` (see below).  If you have an existing `Stanford CoreNLP
 <http://nlp.stanford.edu/software/corenlp.shtml>`_ jar file, use
 the ``jar_filename`` parameter to point to the full path of the jar
-file. Otherwise, PySD will download a jar file for you and store it in
-locally. You can request a specific version with the ``version`` flag,
-e.g., ``version='3.4.1'``.  To convert trees, use the ``convert_tree``
-or ``convert_trees`` method.  These return a sentence (list of ``Token``
-objects) or a list of sentences (list of list of ``Token`` objects)
-respectively::
+file. Otherwise, PyStanfordDependencies will download a jar file for
+you and store it in locally. You can request a specific version with the
+``version`` flag, e.g., ``version='3.4.1'``.  To convert trees, use the
+``convert_tree`` or ``convert_trees`` method.  These return a sentence
+(list of ``Token`` objects) or a list of sentences (list of list of
+``Token`` objects) respectively::
 
     >>> sent = sd.convert_tree('(S1 (NP (DT some) (JJ blue) (NN moose)))')
     >>> for token in sent:
@@ -35,7 +35,7 @@ by ``some`` (with a ``det`` = determiner relation) and ``blue`` (with an
 
 Backends
 --------
-Currently PySD includes two backends:
+Currently PyStanfordDependencies includes two backends:
 
 - Subprocess (works anywhere with a ``java`` binary)
 - JPype (requires `jpype1 <https://pypi.python.org/pypi/JPype1/0.5.7>`_
@@ -48,4 +48,4 @@ Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Written by David McClosky (`homepage <http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
 
-Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PySD/issues>`_
+Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PyStanfordDependencies`_

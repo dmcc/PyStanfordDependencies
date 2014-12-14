@@ -10,11 +10,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import namedtuple
+
 # CoNLL-X field names
 FIELD_NAMES = ('index', 'form', 'lemma', 'cpos', 'pos', 'feats', 'head',
                'deprel', 'phead', 'pdeprel')
 
-class Token:
+class Token(namedtuple('Token', FIELD_NAMES)):
     """A CoNLL-X style dependency token. Fields include:
     - form (the word form)
     - lemma (the word's base form or lemma) -- empty for SubprocessBackend
@@ -23,15 +25,16 @@ class Token:
     - head (index of the head of this token), and
     - deprel (the dependency relation between this token and its head)
 
-    (there are other fields but they typically won't be populated here)"""
-    def __init__(self, **fields):
-        self.__dict__.update(fields)
+    There are other fields but they typically won't be populated by
+    StanfordDependencies.
+
+    See http://ilk.uvt.nl/conll/#dataformat for a complete description."""
     def __repr__(self):
+        # slightly different from the official tuple __repr__ in that
+        # we skip any fields with None as their value
         items = [(field, getattr(self, field, None)) for field in FIELD_NAMES]
         fields = ['%s=%r' % (k, v) for k, v in items if v is not None]
-        return '%s(%s)' % (str(self.__class__).replace('__main__.', ''),
-                           ', '.join(fields))
-
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(fields))
     @classmethod
     def from_string(this_class, text):
         fields = text.split('\t')

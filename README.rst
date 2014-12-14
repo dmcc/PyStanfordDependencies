@@ -30,15 +30,15 @@ respectively::
     >>> for token in sent:
     ...     print token
     ... 
-    StanfordDependencies.Token.Token(index=1, form='some', cpos='DT', pos='DT', head=3, deprel='det')
-    StanfordDependencies.Token.Token(index=2, form='blue', cpos='JJ', pos='JJ', head=3, deprel='amod')
-    StanfordDependencies.Token.Token(index=3, form='moose', cpos='NN', pos='NN', head=0, deprel='root')
+    Token(index=1, form='some', cpos='DT', pos='DT', head=3, deprel='det')
+    Token(index=2, form='blue', cpos='JJ', pos='JJ', head=3, deprel='amod')
+    Token(index=3, form='moose', cpos='NN', pos='NN', head=0, deprel='root')
 
-This tells you that ``moose`` is the head of the sentence and is modified
-by ``some`` (with a ``det`` = determiner relation) and ``blue`` (with an
-``amod`` = adjective modifier relation). Fields on ``Token`` objects
-are accessible (for reading and writing) as attributes. See docs for
-addtional options in ``convert_tree()`` and ``convert_trees()``.
+This tells you that ``moose`` is the head of the sentence and is
+modified by ``some`` (with a ``det`` = determiner relation) and ``blue``
+(with an ``amod`` = adjective modifier relation). Fields on ``Token``
+objects are readable as attributes. See docs for addtional options in
+``convert_tree()`` and ``convert_trees()``.
 
 Backends
 --------

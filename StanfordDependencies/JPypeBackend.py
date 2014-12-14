@@ -26,10 +26,9 @@ class JPypeBackend(StanfordDependencies):
         StanfordDependencies.__init__(self, jar_filename, download_if_missing,
                                       version)
         if start_jpype:
-            extra_jvm_args = extra_jvm_args or []
             jpype.startJVM(jpype.getDefaultJVMPath(), '-ea',
                            '-Djava.class.path=' + self.jar_filename,
-                           *extra_jvm_args)
+                           *(extra_jvm_args or []))
         self.corenlp = jpype.JPackage('edu').stanford.nlp
         try:
             self.acceptFilter = self.corenlp.util.Filters.acceptFilter()

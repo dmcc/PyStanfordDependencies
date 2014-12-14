@@ -17,6 +17,29 @@ from .Token import Token
 
 JAVA_CLASS_NAME = 'edu.stanford.nlp.trees.EnglishGrammaticalStructure'
 
+def read_conll_sentences(stream, deps_to_exclude=None):
+    """stream is an iterable over strings. Returns a list of sentences
+    where a sentence is a list of Token objects. deps_to_exclude
+    is a collection of dependency labels to skip."""
+    deps_to_exclude = deps_to_exclude or []
+    current_sentence = []
+    sentences = []
+    def flush():
+        if current_sentence:
+            sentences.append(list(current_sentence))
+            del current_sentence[:]
+    for line in stream:
+        line = line.strip()
+        if line:
+            token = Token.from_string(line)
+            if token.deprel in deps_to_exclude:
+                continue
+            current_sentence.append(token)
+        else:
+            flush()
+    flush()
+    return sentences
+
 class SubprocessBackend(StanfordDependencies):
     """Interface to Stanford Dependencies via subprocesses. This means
     that each call opens a pipe to Java. It has the advantage that
@@ -25,7 +48,7 @@ class SubprocessBackend(StanfordDependencies):
     convert_tree() for this backend."""
     def __init__(self, jar_filename=None, download_if_missing=False,
                  version=None, java_command='java'):
-        """The java_command flag is the path to a java binary."""
+        """java_command is the path to a java binary."""
         StanfordDependencies.__init__(self, jar_filename, download_if_missing,
                                       version)
         self.java_command = java_command
@@ -44,36 +67,29 @@ class SubprocessBackend(StanfordDependencies):
                 input_file.write(ptb_tree + '\n')
             input_file.flush()
 
-            command = [self.java_command, '-ea', '-cp', self.jar_filename,
-                       JAVA_CLASS_NAME, '-' + representation, '-treeFile',
-                       input_file.name, '-conllx']
+            command = [self.java_command,
+                       '-ea',
+                       '-cp', self.jar_filename,
+                       JAVA_CLASS_NAME,
+                       '-' + representation,
+                       '-treeFile', input_file.name,
+                       '-conllx']
             sd_process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                           stderr=subprocess.PIPE)
+            return_code = sd_process.wait()
             stderr = sd_process.stderr.read()
-            output = sd_process.stdout.read()
-            if sd_process.wait():
+            stdout = sd_process.stdout.read()
+            if return_code:
                 if 'Unsupported major.minor version' in stderr:
                     self.java_is_too_old()
                 raise RuntimeError("Bad exit code from Stanford CoreNLP")
 
-        current_sentence = []
-        sentences = []
-        def flush():
-            if current_sentence:
-                sentences.append(list(current_sentence))
-                del current_sentence[:]
-        for line in output.splitlines():
-            line = line.strip()
-            if line:
-                token = Token.from_string(line)
-                if token.deprel == 'erased' and not include_erased:
-                    continue
-                if token.deprel == 'punct' and not include_punct:
-                    continue
-                current_sentence.append(token)
-            else:
-                flush()
-        flush()
+        deps_to_exclude = []
+        if not include_erased:
+            deps_to_exclude.append('erased')
+        if not include_punct:
+            deps_to_exclude.append('punct')
+        sentences = read_conll_sentences(stdout.splitlines(), deps_to_exclude)
 
         if len(sentences) != len(ptb_trees):
             raise RuntimeError("Only got %d sentences from Stanford Dependencies when given %d trees." % (len(sentences), len(ptb_trees)))

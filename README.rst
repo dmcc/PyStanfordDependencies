@@ -31,8 +31,8 @@ you and store it in locally. You can request a specific version with the
 
 This tells you that ``moose`` is the head of the sentence and is modified
 by ``some`` (with a ``det`` = determiner relation) and ``blue`` (with an
-``amod`` = adjective modifier relation). Fields on tokens are accessible
-(for reading and writing) as attributes.
+``amod`` = adjective modifier relation). Fields on ``Token`` objects
+are accessible (for reading and writing) as attributes.
 
 Backends
 --------
@@ -43,8 +43,8 @@ Currently PyStanfordDependencies includes two backends:
   from PyPI, faster than Subprocess, includes access to the Stanford
   CoreNLP lemmatizer)
 
-By default, it will attempt to use the `jpype` backend and fallback to
-`subprocess` with a warning.
+By default, it will attempt to use the ``jpype`` backend and fallback to
+``subprocess`` with a warning.
 
 More information
 ----------------
@@ -52,4 +52,4 @@ Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Written by David McClosky (`homepage <http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
 
-Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PyStanfordDependencies`_
+Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PyStanfordDependencies>`_

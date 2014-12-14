@@ -89,7 +89,8 @@ class JPypeBackend(StanfordDependencies):
                 lemma = self.stemmer(form, tag).word()
             else:
                 lemma = None
-            token = Token(index=index, form=form, cpos=tag, pos=tag,
-                          head=head, deprel=deprel, lemma=lemma)
+            token = Token(index=index, form=form, lemma=lemma, cpos=tag,
+                          pos=tag, feats=None, head=head, deprel=deprel,
+                          phead=None, pdeprel=None)
             tokens.append(token)
         return tokens

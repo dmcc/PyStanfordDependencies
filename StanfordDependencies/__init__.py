@@ -13,3 +13,8 @@
 
 from StanfordDependencies import StanfordDependencies
 from Token import Token
+
+__authors__ = 'David McClosky'
+__license__ = 'Apache 2.0'
+__version__ = '0.1'
+__email__ = 'notsoweird+pystanforddependencies@gmail.com'

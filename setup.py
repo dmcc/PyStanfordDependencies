@@ -7,7 +7,7 @@ setup(name='PyStanfordDependencies',
       description='Python interface for converting Penn Treebank trees to Stanford Dependencies',
       long_description='See http://github.com/dmcc/PyStanfordDependencies',
       author='David McClosky',
-      author_email='notsoweird+pysd@gmail.com',
+      author_email='notsoweird+pystanforddependencies@gmail.com',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Science/Research',

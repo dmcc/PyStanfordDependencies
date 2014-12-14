@@ -13,15 +13,16 @@
 
 from StanfordDependencies import StanfordDependencies
 
+def print_sentences(sentences):
+    for sentence in sentences:
+        print '---'
+        for token in sentence:
+            print token
+    print
+
 if __name__ == "__main__":
     # simple testing script -- ideally will be replaced with proper
     # unit tests
-    def print_sentences(sentences):
-        for sentence in sentences:
-            print '---'
-            for token in sentence:
-                print token
-        print
 
     for backend in ('jpype', 'subprocess'):
         print 'Backend:', backend

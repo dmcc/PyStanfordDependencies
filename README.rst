@@ -1,7 +1,9 @@
 PyStanfordDependencies
 ======================
 
-Python interface for converting Penn Treebank trees to `Stanford Dependencies <http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.
+Python interface for converting `Penn Treebank
+<http://www.cis.upenn.edu/~treebank/>`_ trees to `Stanford Dependencies
+<http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.
 
 Example usage
 -------------

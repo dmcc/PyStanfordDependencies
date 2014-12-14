@@ -11,8 +11,8 @@
 # limitations under the License.
 
 import jpype
-from StanfordDependencies import StanfordDependencies
-from Token import Token
+from .StanfordDependencies import StanfordDependencies
+from .Token import Token
 
 class JPypeBackend(StanfordDependencies):
     """Faster backend than SubprocessBackend but requires you to install

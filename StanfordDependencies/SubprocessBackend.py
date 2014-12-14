@@ -10,10 +10,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from StanfordDependencies import StanfordDependencies
-from Token import Token
 import subprocess
 import tempfile
+from .StanfordDependencies import StanfordDependencies
+from .Token import Token
 
 JAVA_CLASS_NAME = 'edu.stanford.nlp.trees.EnglishGrammaticalStructure'
 

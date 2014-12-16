@@ -22,7 +22,7 @@ class StanfordDependencies:
     """Abstract base class for converting Penn Treebank trees to Stanford
     Dependencies. To actually use this, you'll want to instantiate one
     of the backends. The easiest way to do this is via the get_instance()
-    class method.
+    helper method.
 
     If you do not currently have the appropriate Java jar files, the
     download_if_missing flag in the constructor will help you fetch them.
@@ -129,6 +129,30 @@ class StanfordDependencies:
     def get_instance(jar_filename=None, version=None,
                      download_if_missing=True, backend='jpype',
                      **extra_args):
+        """This is the typical mechanism of constructing a
+        StanfordDependencies instance. The backend parameter determines
+        which backend to load (currently can be 'subprocess' or 'jpype').
+
+        To determine which jar file is used, you must specify
+        jar_filename, download_if_missing=True, and/or version.
+        - If jar_filename is specified, that jar is used and the other two
+          flags are ignored.
+        - Otherwise, if download_if_missing, we will download a jar file
+          from the Maven repository. This jar file will be the latest
+          known version of CoreNLP unless the version flag is specified
+          (e.g., version='3.4.1') in which case we'll attempt to download
+          and use that version. Once downloaded, it will be stored in
+          your home directory and not downloaded again.
+        - If jar_filename and download_if_missing are not specified,
+          version must be set to a version previously downloaded in the
+          above step.
+
+        All remaining keyword arguments are passes on to the
+        StanfordDependencies backend constructor.
+
+        If the above options are confusing, don't panic! You can leave
+        them all blank -- get_instance() is designed to provide the best
+        and latest available conversion settings by default."""
         extra_args.update(jar_filename=jar_filename,
                           download_if_missing=download_if_missing,
                           version=version)
@@ -140,9 +164,6 @@ class StanfordDependencies:
                 import warnings
                 warnings.warn('Error importing JPypeBackend, ' +
                               'falling back to SubprocessBackend.')
-
-                # fall back to subprocess backend which should work
-                # more generally
                 backend = 'subprocess'
 
         if backend == 'subprocess':

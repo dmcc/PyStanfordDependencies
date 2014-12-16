@@ -150,3 +150,8 @@ class StanfordDependencies:
             return SubprocessBackend(**extra_args)
 
         raise ValueError("Unknown backend: %r (known backends: 'subprocess' and 'jpype')" % backend)
+
+def get_instance(*args, **kwargs):
+    """Convenience method, see StanfordDependencies.get_instance()
+    for list of arguments."""
+    return StanfordDependencies.get_instance(*args, **kwargs)

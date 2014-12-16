@@ -10,7 +10,7 @@ Example usage
 Start by getting a ``StanfordDependencies`` instance with
 ``StanfordDependencies.get_instance()``::
 
-    >>> from StanfordDependencies import StanfordDependencies
+    >>> import StanfordDependencies
     >>> sd = StanfordDependencies.get_instance(backend='subprocess')
 
 ``get_instance()`` takes several options. ``backend`` can currently

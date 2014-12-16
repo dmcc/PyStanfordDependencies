@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .StanfordDependencies import StanfordDependencies
+from .StanfordDependencies import StanfordDependencies, get_instance
 from .Token import Token
 
 __authors__ = 'David McClosky'

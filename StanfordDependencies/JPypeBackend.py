@@ -23,9 +23,15 @@ class JPypeBackend(StanfordDependencies):
     the option to run the lemmatizer (see convert_tree())."""
     def __init__(self, jar_filename=None, download_if_missing=False,
                  version=None, extra_jvm_args=None, start_jpype=True):
+        """extra_jvm_args can be set to a list of strings which will
+        be passed to your JVM.  If start_jpype is True, we will start
+        a JVM via JPype if one hasn't been started already. The user is
+        responsible for stopping the JVM (jpype.shutdownJVM()) when they
+        are done converting. Once the JVM has been shutdown, you'll need
+        to create a new JPypeBackend in order to convert after that."""
         StanfordDependencies.__init__(self, jar_filename, download_if_missing,
                                       version)
-        if start_jpype:
+        if start_jpype and not jpype.isJVMStarted():
             jpype.startJVM(jpype.getDefaultJVMPath(), '-ea',
                            '-Djava.class.path=' + self.jar_filename,
                            *(extra_jvm_args or []))

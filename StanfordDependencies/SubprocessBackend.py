@@ -31,7 +31,7 @@ def read_conll_sentences(stream, deps_to_exclude=None):
     for line in stream:
         line = line.strip()
         if line:
-            token = Token.from_string(line)
+            token = Token.from_conll(line)
             if token.deprel in deps_to_exclude:
                 continue
             current_sentence.append(token)

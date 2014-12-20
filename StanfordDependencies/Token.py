@@ -30,13 +30,25 @@ class Token(namedtuple('Token', FIELD_NAMES)):
 
     See http://ilk.uvt.nl/conll/#dataformat for a complete description."""
     def __repr__(self):
+        """Represent this Token as Python code. Note that the resulting
+        representation may not be a valid Python call since this skips
+        fields with empty values."""
         # slightly different from the official tuple __repr__ in that
         # we skip any fields with None as their value
         items = [(field, getattr(self, field, None)) for field in FIELD_NAMES]
         fields = ['%s=%r' % (k, v) for k, v in items if v is not None]
         return '%s(%s)' % (self.__class__.__name__, ', '.join(fields))
+    def as_conll(self):
+        """Represent this Token as a line in CoNLL-X format."""
+        def get(field):
+            value = getattr(self, field)
+            if value is None:
+                value = '_'
+            return str(value)
+        return '\t'.join([get(field) for field in FIELD_NAMES])
     @classmethod
-    def from_string(this_class, text):
+    def from_conll(this_class, text):
+        """Construct a Token from a line in CoNLL-X format."""
         fields = text.split('\t')
         fields[0] = int(fields[0]) # index
         fields[6] = int(fields[6]) # head index

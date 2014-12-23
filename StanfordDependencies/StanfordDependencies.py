@@ -165,6 +165,11 @@ class StanfordDependencies:
                 warnings.warn('Error importing JPypeBackend, ' +
                               'falling back to SubprocessBackend.')
                 backend = 'subprocess'
+            except RuntimeError, r:
+                import warnings
+                warnings.warn('RuntimeError with JPypeBackend (%s), '
+                              'falling back to SubprocessBackend.' % r[0])
+                backend = 'subprocess'
 
         if backend == 'subprocess':
             from SubprocessBackend import SubprocessBackend

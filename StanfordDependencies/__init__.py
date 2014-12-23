@@ -77,7 +77,7 @@ Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/
 """
 
 from .StanfordDependencies import StanfordDependencies, get_instance
-from .Token import Token
+from .CoNLL import Token
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'

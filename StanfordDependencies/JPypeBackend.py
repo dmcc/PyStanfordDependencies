@@ -12,7 +12,7 @@
 
 import jpype
 from .StanfordDependencies import StanfordDependencies
-from .Token import Token
+from .CoNLL import Token
 
 class JPypeBackend(StanfordDependencies):
     """Faster backend than SubprocessBackend but requires you to install

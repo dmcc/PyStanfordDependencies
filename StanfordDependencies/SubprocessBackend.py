@@ -13,32 +13,9 @@
 import subprocess
 import tempfile
 from .StanfordDependencies import StanfordDependencies
-from .Token import Token
+from .CoNLL import Corpus, Sentence
 
 JAVA_CLASS_NAME = 'edu.stanford.nlp.trees.EnglishGrammaticalStructure'
-
-def read_conll_sentences(stream, deps_to_exclude=None):
-    """stream is an iterable over strings. Returns a list of sentences
-    where a sentence is a list of Token objects. deps_to_exclude
-    is a collection of dependency labels to skip."""
-    deps_to_exclude = deps_to_exclude or []
-    current_sentence = []
-    sentences = []
-    def flush():
-        if current_sentence:
-            sentences.append(list(current_sentence))
-            del current_sentence[:]
-    for line in stream:
-        line = line.strip()
-        if line:
-            token = Token.from_conll(line)
-            if token.deprel in deps_to_exclude:
-                continue
-            current_sentence.append(token)
-        else:
-            flush()
-    flush()
-    return sentences
 
 class SubprocessBackend(StanfordDependencies):
     """Interface to Stanford Dependencies via subprocesses. This means
@@ -84,12 +61,14 @@ class SubprocessBackend(StanfordDependencies):
                     self.java_is_too_old()
                 raise RuntimeError("Bad exit code from Stanford CoreNLP")
 
-        deps_to_exclude = []
+        deps_to_exclude = set()
         if not include_erased:
-            deps_to_exclude.append('erased')
+            deps_to_exclude.add('erased')
         if not include_punct:
-            deps_to_exclude.append('punct')
-        sentences = read_conll_sentences(stdout.splitlines(), deps_to_exclude)
+            deps_to_exclude.add('punct')
+        def token_filter(token):
+            return token.deprel not in deps_to_exclude
+        sentences = Corpus.from_conll(stdout.splitlines(), token_filter=token_filter)
 
         if len(sentences) != len(ptb_trees):
             raise RuntimeError("Only got %d sentences from Stanford Dependencies when given %d trees." % (len(sentences), len(ptb_trees)))

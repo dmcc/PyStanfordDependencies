@@ -51,7 +51,7 @@ Currently PyStanfordDependencies includes two backends:
   lemmatizer)
 
 By default, it will attempt to use the ``jpype`` backend and fallback to
-``subprocess`` with a warning.
+``subprocess`` with a warning if ``jpype`` isn't available.
 
 More information
 ----------------

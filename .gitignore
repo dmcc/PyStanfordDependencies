@@ -6,3 +6,5 @@ TAGS
 build*
 dist*
 MANIFEST
+.coverage
+*,cover

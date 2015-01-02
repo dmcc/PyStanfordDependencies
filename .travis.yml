@@ -6,7 +6,11 @@ python:
 cache:
   directories:
     - $HOME/.local/share/pystanforddeps
-install: pip install jpype1
+install:
+  - pip install jpype1
+  - pip install python-coveralls
 script:
   - pip install .
-  - nosetests -v
+  - nosetests -v --with-coverage --cover-package=StanfordDependencies
+after_success:
+  - coveralls

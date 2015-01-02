@@ -6,3 +6,5 @@ glob:*.py[co]
 glob:build*
 glob:dist*
 glob:MANIFEST
+glob:.coverage
+glob:*,cover

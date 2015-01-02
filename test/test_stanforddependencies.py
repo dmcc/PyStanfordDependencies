@@ -11,7 +11,7 @@
 # limitations under the License.
 
 import unittest
-from StanfordDependencies import StanfordDependencies
+from StanfordDependencies import StanfordDependencies, get_instance
 from StanfordDependencies.SubprocessBackend import SubprocessBackend
 from StanfordDependencies.JPypeBackend import JPypeBackend
 
@@ -145,6 +145,52 @@ Token(index=7, form='beans', cpos='NNS', pos='NNS', head=5, deprel='prep_with')
 Token(index=10, form='rice', cpos='NN', pos='NN', head=7, deprel='conj_negcc')
 Token(index=11, form='.', cpos='.', pos='.', head=2, deprel='punct')
 '''.strip()
+tree5_out_collapsedTree_no_punc = '''
+Token(index=1, form='Ed', cpos='NNP', pos='NNP', head=2, deprel='nsubj')
+Token(index=2, form='cooks', cpos='VBZ', pos='VBZ', head=0, deprel='root')
+Token(index=4, form='sells', cpos='VBZ', pos='VBZ', head=2, deprel='conj_and')
+Token(index=5, form='burritos', cpos='NNS', pos='NNS', head=2, deprel='dobj')
+Token(index=7, form='beans', cpos='NNS', pos='NNS', head=5, deprel='prep_with')
+Token(index=10, form='rice', cpos='NN', pos='NN', head=7, deprel='conj_negcc')
+'''.strip()
+tree5_out_collapsedTree_erased = '''
+Token(index=1, form='Ed', cpos='NNP', pos='NNP', head=2, deprel='nsubj')
+Token(index=2, form='cooks', cpos='VBZ', pos='VBZ', head=0, deprel='root')
+Token(index=3, form='and', cpos='CC', pos='CC', head=0, deprel='erased')
+Token(index=4, form='sells', cpos='VBZ', pos='VBZ', head=2, deprel='conj_and')
+Token(index=5, form='burritos', cpos='NNS', pos='NNS', head=2, deprel='dobj')
+Token(index=6, form='with', cpos='IN', pos='IN', head=0, deprel='erased')
+Token(index=7, form='beans', cpos='NNS', pos='NNS', head=5, deprel='prep_with')
+Token(index=8, form='but', cpos='CC', pos='CC', head=0, deprel='erased')
+Token(index=9, form='not', cpos='RB', pos='RB', head=0, deprel='erased')
+Token(index=10, form='rice', cpos='NN', pos='NN', head=7, deprel='conj_negcc')
+Token(index=11, form='.', cpos='.', pos='.', head=2, deprel='punct')
+'''.strip()
+tree5_out_collapsedTree_erased_no_punct = '''
+Token(index=1, form='Ed', cpos='NNP', pos='NNP', head=2, deprel='nsubj')
+Token(index=2, form='cooks', cpos='VBZ', pos='VBZ', head=0, deprel='root')
+Token(index=3, form='and', cpos='CC', pos='CC', head=0, deprel='erased')
+Token(index=4, form='sells', cpos='VBZ', pos='VBZ', head=2, deprel='conj_and')
+Token(index=5, form='burritos', cpos='NNS', pos='NNS', head=2, deprel='dobj')
+Token(index=6, form='with', cpos='IN', pos='IN', head=0, deprel='erased')
+Token(index=7, form='beans', cpos='NNS', pos='NNS', head=5, deprel='prep_with')
+Token(index=8, form='but', cpos='CC', pos='CC', head=0, deprel='erased')
+Token(index=9, form='not', cpos='RB', pos='RB', head=0, deprel='erased')
+Token(index=10, form='rice', cpos='NN', pos='NN', head=7, deprel='conj_negcc')
+'''.strip()
+tree5_out_basic_lemmas = '''
+Token(index=1, form='Ed', lemma='Ed', cpos='NNP', pos='NNP', head=2, deprel='nsubj')
+Token(index=2, form='cooks', lemma='cook', cpos='VBZ', pos='VBZ', head=0, deprel='root')
+Token(index=3, form='and', lemma='and', cpos='CC', pos='CC', head=2, deprel='cc')
+Token(index=4, form='sells', lemma='sell', cpos='VBZ', pos='VBZ', head=2, deprel='conj')
+Token(index=5, form='burritos', lemma='burrito', cpos='NNS', pos='NNS', head=2, deprel='dobj')
+Token(index=6, form='with', lemma='with', cpos='IN', pos='IN', head=5, deprel='prep')
+Token(index=7, form='beans', lemma='bean', cpos='NNS', pos='NNS', head=6, deprel='pobj')
+Token(index=8, form='but', lemma='but', cpos='CC', pos='CC', head=9, deprel='cc')
+Token(index=9, form='not', lemma='not', cpos='RB', pos='RB', head=7, deprel='cc')
+Token(index=10, form='rice', lemma='rice', cpos='NN', pos='NN', head=7, deprel='conj')
+Token(index=11, form='.', lemma='.', cpos='.', pos='.', head=2, deprel='punct')
+'''.strip()
 
 basic_tests = ((tree1, tree1_out), (tree2, tree2_out_basic), (tree3, tree3_out),
                (tree4, tree4_out_basic), (tree5, tree5_out_basic))
@@ -165,6 +211,11 @@ def test_subprocess_backend_creation():
                                            download_if_missing=True)
     assert isinstance(sd, SubprocessBackend)
 
+def test_subprocess_backend_creation_shortcut():
+    sd = get_instance(backend='subprocess', version='3.4.1',
+                      download_if_missing=True)
+    assert isinstance(sd, SubprocessBackend)
+
 def test_jpype_backend_creation():
     sd = StanfordDependencies.get_instance(backend='jpype',
                                            version='3.4.1',
@@ -174,7 +225,7 @@ def test_jpype_backend_creation():
 
 def stringify_sentence(tokens):
     from StanfordDependencies import CoNLL
-    # this doesn't work in general, but for current tests, we want all
+    # this doesn't work in general, but for current tests we want all
     # the string fields to be strings, not unicode
     new_tokens = []
     for token in tokens:
@@ -210,6 +261,36 @@ class DefaultBackendTest(unittest.TestCase):
             self.assertConverts(tree4, expected, representation=representation)
         for representation, expected in sorted(repr_tests5.items()):
             self.assertConverts(tree5, expected, representation=representation)
+    def test_punct_and_erased(self):
+        self.assertConverts(tree5, tree5_out_collapsedTree_no_punc,
+                            representation='collapsedTree',
+                            include_punct=False, include_erased=False)
+        self.assertConverts(tree5, tree5_out_collapsedTree_erased_no_punct,
+                            representation='collapsedTree',
+                            include_punct=False, include_erased=True)
+        self.assertConverts(tree5, tree5_out_collapsedTree,
+                            representation='collapsedTree',
+                            include_punct=True, include_erased=False)
+        self.assertConverts(tree5, tree5_out_collapsedTree_erased,
+                            representation='collapsedTree',
+                            include_punct=True, include_erased=True)
+    def test_bogus_representation(self):
+        self.assertRaises(ValueError, self.sd.convert_tree, tree1,
+                          representation='bogus')
+    def test_bogus_backend_creation(self):
+        self.assertRaises(ValueError, StanfordDependencies.get_instance,
+                          backend='bogus')
+    def test_insufficient_jar_info(self):
+        self.assertRaises(ValueError, StanfordDependencies.get_instance,
+                          backend=self.backend, jar_filename=None,
+                          download_if_missing=False, version=None)
+    def test_java_is_too_old(self):
+        self.assertRaises(RuntimeError,
+                          StanfordDependencies.java_is_too_old)
+    def test_get_jar_url(self):
+        assert self.sd.get_jar_url(version='3.5.0') == \
+            "http://search.maven.org/remotecontent?filepath=edu/" \
+            "stanford/nlp/stanford-corenlp/3.5.0/stanford-corenlp-3.5.0.jar"
 
     def assertConverts(self, tree, expected, **conversion_options):
         print 'tree:'
@@ -233,3 +314,6 @@ class SubprocessBackendTest(DefaultBackendTest):
 class JPypeBackendTest(DefaultBackendTest):
     backend = 'jpype'
     version = '3.4.1'
+
+    def test_add_lemmas(self):
+        self.assertConverts(tree5, tree5_out_basic_lemmas, add_lemmas=True)

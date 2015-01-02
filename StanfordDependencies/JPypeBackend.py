@@ -43,8 +43,8 @@ class JPypeBackend(StanfordDependencies):
             # versions since this method changed to return a Predicate.
             version = jpype.java.lang.System.getProperty("java.version")
             print "Your Java version:", version
-            if version.startswith('1.7'):
-                print "The last CoreNLP release for Java 1.7 was 3.4.1"
+            if version.split('.')[:2] < ['1', '8']:
+                print "The last CoreNLP release for Java 1.6/1.7 was 3.4.1"
                 print "Try using: StanfordDependencies.get_instance(backend='jpype', version='3.4.1')"
             print
             self.java_is_too_old()

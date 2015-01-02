@@ -9,4 +9,4 @@ cache:
 install: pip install jpype1
 script:
   - pip install .
-  - nosetests
+  - nosetests -v

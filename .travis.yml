@@ -6,7 +6,7 @@ python:
 cache:
   directories:
     - $HOME/.local/share/pystanforddeps
-install: pip install --user jpype1
+install: pip install jpype1
 script:
-  - pip install --user .
+  - pip install .
   - nosetests

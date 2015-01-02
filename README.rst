@@ -35,7 +35,7 @@ respectively::
     >>> sent = sd.convert_tree('(S1 (NP (DT some) (JJ blue) (NN moose)))')
     >>> for token in sent:
     ...     print token
-    ... 
+    ...
     Token(index=1, form='some', cpos='DT', pos='DT', head=3, deprel='det')
     Token(index=2, form='blue', cpos='JJ', pos='JJ', head=3, deprel='amod')
     Token(index=3, form='moose', cpos='NN', pos='NN', head=0, deprel='root')

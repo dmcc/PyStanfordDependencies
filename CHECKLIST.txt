@@ -1,0 +1,10 @@
+Release checklist
+-----------------
+0a. Ensure tests are passing
+0b. Ensure latest version of Stanford CoreNLP is set properly
+1.  Version bumps in StanfordDependencies/__init__.py and setup.py
+2.  Update release history in README.rst
+3.  Sync README.rst content with StanfordDependencies/__init__.py
+4.  python setup.py register sdist upload
+5.  Edit PyPI description, add keywords
+6.  Tag release on GitHub

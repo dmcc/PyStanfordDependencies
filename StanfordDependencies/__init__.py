@@ -59,13 +59,14 @@ Backends
 Currently PyStanfordDependencies includes two backends:
 
 - ``subprocess`` (works anywhere with a ``java`` binary, slow so
-  conversions with ``convert_trees()`` are recommended)
+  batched conversions with ``convert_trees()`` are recommended)
 - ``jpype`` (requires `jpype1 <https://pypi.python.org/pypi/JPype1>`_,
   faster than Subprocess, includes access to the Stanford CoreNLP
   lemmatizer)
 
-By default, it will attempt to use the ``jpype`` backend and fallback to
-``subprocess`` with a warning.
+By default, PyStanfordDependencies will attempt to use the ``jpype``
+backend and fallback to ``subprocess`` with a warning if ``jpype``
+isn't available or crashes on startup.
 
 More information
 ----------------
@@ -74,6 +75,12 @@ Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 Written by David McClosky (`homepage <http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
 
 Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PyStanfordDependencies/issues>`_
+
+Release history summary
+-----------------------
+- 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI support, bugfixes
+- 0.1.1 (2014.12.15): More docs, fewer bugs
+- 0.1 (2014.12.14): Initial version
 """
 
 from .StanfordDependencies import StanfordDependencies, get_instance
@@ -81,5 +88,5 @@ from .CoNLL import Token
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __email__ = 'notsoweird+pystanforddependencies@gmail.com'

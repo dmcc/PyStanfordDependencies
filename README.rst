@@ -1,6 +1,12 @@
 PyStanfordDependencies
 ======================
 
+.. image:: https://travis-ci.org/dmcc/PyStanfordDependencies.svg?branch=master
+    :target: https://travis-ci.org/dmcc/PyStanfordDependencies
+
+.. image:: https://badge.fury.io/py/PyStanfordDependencies.png
+   :target: https://badge.fury.io/py/PyStanfordDependencies
+
 Python interface for converting `Penn Treebank
 <http://www.cis.upenn.edu/~treebank/>`_ trees to `Stanford Dependencies
 <http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.
@@ -45,13 +51,14 @@ Backends
 Currently PyStanfordDependencies includes two backends:
 
 - ``subprocess`` (works anywhere with a ``java`` binary, slow so
-  conversions with ``convert_trees()`` are recommended)
+  batched conversions with ``convert_trees()`` are recommended)
 - ``jpype`` (requires `jpype1 <https://pypi.python.org/pypi/JPype1>`_,
   faster than Subprocess, includes access to the Stanford CoreNLP
   lemmatizer)
 
-By default, it will attempt to use the ``jpype`` backend and fallback to
-``subprocess`` with a warning if ``jpype`` isn't available.
+By default, PyStanfordDependencies will attempt to use the ``jpype``
+backend and fallback to ``subprocess`` with a warning if ``jpype``
+isn't available or crashes on startup.
 
 More information
 ----------------
@@ -60,3 +67,9 @@ Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 Written by David McClosky (`homepage <http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
 
 Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PyStanfordDependencies/issues>`_
+
+Release history summary
+-----------------------
+- 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI support, bugfixes
+- 0.1.1 (2014.12.15): More docs, fewer bugs
+- 0.1 (2014.12.14): Initial version

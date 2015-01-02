@@ -58,6 +58,7 @@ class JPypeBackend(StanfordDependencies):
         """Arguments are as in StanfordDependencies.convert_trees but with
         the addition of add_lemmas. If add_lemmas=True, we will run the
         Stanford CoreNLP lemmatizer and fill in the lemma field."""
+        self.check_representation(representation)
         tree = self.treeReader(ptb_tree)
         if include_punct:
             egs = self.grammaticalStructure(tree, self.acceptFilter)

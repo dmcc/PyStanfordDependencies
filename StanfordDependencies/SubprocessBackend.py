@@ -39,6 +39,7 @@ class SubprocessBackend(StanfordDependencies):
         Currently supported representations are 'basic', 'collapsed',
         'CCprocessed', and 'collapsedTree' which behave the same as they
         in the CoreNLP command line tools."""
+        self.check_representation(representation)
         with tempfile.NamedTemporaryFile() as input_file:
             for ptb_tree in ptb_trees:
                 input_file.write(ptb_tree + '\n')

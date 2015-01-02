@@ -18,6 +18,9 @@ DEFAULT_CORENLP_VERSION = '3.5.0'
 # where we store downloaded jar files
 INSTALL_DIR = '~/.local/share/pystanforddeps'
 
+# list of currently supported representations
+REPRESENTATIONS = ('basic', 'collapsed', 'CCprocessed', 'collapsedTree')
+
 class StanfordDependencies:
     """Abstract base class for converting Penn Treebank trees to Stanford
     Dependencies. To actually use this, you'll want to instantiate one
@@ -107,6 +110,15 @@ class StanfordDependencies:
             import urllib
             urllib.urlretrieve(jar_url, filename=self.jar_filename)
 
+    @staticmethod
+    def check_representation(representation):
+        """Ensure that representation is a known Stanford Dependency
+        representation (raises a ValueError if the representation is
+        invalid)."""
+        if representation not in REPRESENTATIONS:
+            repr_desc = ', '.join(map(repr, REPRESENTATIONS))
+            raise ValueError("Unknown representation: %r (should be one " \
+                             "of %s)" % (representation, repr_desc))
     @staticmethod
     def java_is_too_old():
         """Warn the user that their JRE is too old to handle the requested

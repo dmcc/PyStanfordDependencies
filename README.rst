@@ -7,6 +7,9 @@ PyStanfordDependencies
 .. image:: https://badge.fury.io/py/PyStanfordDependencies.png
    :target: https://badge.fury.io/py/PyStanfordDependencies
 
+.. image:: https://coveralls.io/repos/dmcc/PyStanfordDependencies/badge.png?branch=master
+   :target: https://coveralls.io/r/dmcc/PyStanfordDependencies?branch=master
+
 Python interface for converting `Penn Treebank
 <http://www.cis.upenn.edu/~treebank/>`_ trees to `Stanford Dependencies
 <http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.

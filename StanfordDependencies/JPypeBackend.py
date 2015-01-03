@@ -33,7 +33,8 @@ class JPypeBackend(StanfordDependencies):
         StanfordDependencies.__init__(self, jar_filename, download_if_missing,
                                       version)
         if start_jpype and not jpype.isJVMStarted():
-            jpype.startJVM(jpype.getDefaultJVMPath(), '-ea',
+            jpype.startJVM(jpype.getDefaultJVMPath(),
+                           '-ea',
                            '-Djava.class.path=' + self.jar_filename,
                            *(extra_jvm_args or []))
         self.corenlp = jpype.JPackage('edu').stanford.nlp
@@ -43,19 +44,13 @@ class JPypeBackend(StanfordDependencies):
             # this appears to be caused by a mismatch between CoreNLP and JRE
             # versions since this method changed to return a Predicate.
             version = jpype.java.lang.System.getProperty("java.version")
-            print "Your Java version:", version
-            if version.split('.')[:2] < ['1', '8']:
-                print "The last CoreNLP release for Java 1.6/1.7 was 3.4.1"
-                print "Try using: StanfordDependencies.get_instance(" \
-                      "backend='jpype', version='3.4.1')"
-            print
-            raise JavaRuntimeVersionError()
+            self._report_version_error(version)
         trees = self.corenlp.trees
         self.treeReader = trees.Trees.readTree
         self.grammaticalStructure = trees.EnglishGrammaticalStructure
         self.stemmer = self.corenlp.process.Morphology.stemStaticSynchronized
         self.puncFilter = trees.PennTreebankLanguagePack(). \
-                          punctuationWordRejectFilter().accept
+            punctuationWordRejectFilter().accept
     def convert_tree(self, ptb_tree, representation='basic',
                      include_punct=True, include_erased=False,
                      add_lemmas=False):
@@ -108,3 +103,13 @@ class JPypeBackend(StanfordDependencies):
                           phead=None, pdeprel=None)
             tokens.append(token)
         return tokens
+
+    @staticmethod
+    def _report_version_error(version):
+        print "Your Java version:", version
+        if version.split('.')[:2] < ['1', '8']:
+            print "The last CoreNLP release for Java 1.6/1.7 was 3.4.1"
+            print "Try using: StanfordDependencies.get_instance(" \
+                  "backend='jpype', version='3.4.1')"
+            print
+        raise JavaRuntimeVersionError()

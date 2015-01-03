@@ -72,18 +72,22 @@ More information
 ----------------
 Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
 
-Written by David McClosky (`homepage <http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
+Written by David McClosky (`homepage
+<http://nlp.stanford.edu/~mcclosky/>`_, `code <http://github.com/dmcc>`_)
 
-Bug reports and feature requests: `GitHub issue tracker <http://github.com/dmcc/PyStanfordDependencies/issues>`_
+Bug reports and feature requests: `GitHub issue tracker
+<http://github.com/dmcc/PyStanfordDependencies/issues>`_
 
 Release history summary
 -----------------------
-- 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI support, bugfixes
+- 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI
+  support, bugfixes
 - 0.1.1 (2014.12.15): More docs, fewer bugs
 - 0.1 (2014.12.14): Initial version
 """
 
-from .StanfordDependencies import StanfordDependencies, get_instance
+from .StanfordDependencies import (StanfordDependencies, get_instance,
+                                   JavaRuntimeVersionError)
 from .CoNLL import Token
 
 __authors__ = 'David McClosky'

@@ -21,6 +21,14 @@ INSTALL_DIR = '~/.local/share/pystanforddeps'
 # list of currently supported representations
 REPRESENTATIONS = ('basic', 'collapsed', 'CCprocessed', 'collapsedTree')
 
+class JavaRuntimeVersionError(EnvironmentError):
+    """Error for when the Java runtime environment is too old to support
+    the specified version of Stanford CoreNLP."""
+    def __init__(self):
+        message = "Your Java runtime is too old (must be 1.8+ to use " \
+                  "CoreNLP version 3.5.0 or later)"
+        super(JavaRuntimeVersionError, self).__init__(message)
+
 class StanfordDependencies:
     """Abstract base class for converting Penn Treebank trees to Stanford
     Dependencies. To actually use this, you'll want to instantiate one
@@ -111,7 +119,7 @@ class StanfordDependencies:
             urllib.urlretrieve(jar_url, filename=self.jar_filename)
 
     @staticmethod
-    def check_representation(representation):
+    def _raise_on_bad_representation(representation):
         """Ensure that representation is a known Stanford Dependency
         representation (raises a ValueError if the representation is
         invalid)."""
@@ -119,11 +127,6 @@ class StanfordDependencies:
             repr_desc = ', '.join(map(repr, REPRESENTATIONS))
             raise ValueError("Unknown representation: %r (should be one " \
                              "of %s)" % (representation, repr_desc))
-    @staticmethod
-    def java_is_too_old():
-        """Warn the user that their JRE is too old to handle the requested
-        version of Stanford CoreNLP."""
-        raise RuntimeError("Your Java runtime is too old (must be 1.8+ to use CoreNLP version 3.5.0 or later)")
 
     @staticmethod
     def get_jar_url(version=None):

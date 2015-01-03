@@ -281,9 +281,6 @@ class DefaultBackendTest(unittest.TestCase):
         self.assertRaises(ValueError, StanfordDependencies.get_instance,
                           backend=self.backend, jar_filename=None,
                           download_if_missing=False, version=None)
-    def test_java_is_too_old(self):
-        self.assertRaises(RuntimeError,
-                          StanfordDependencies.java_is_too_old)
     def test_get_jar_url(self):
         assert self.sd.get_jar_url(version='3.5.0') == \
             "http://search.maven.org/remotecontent?filepath=edu/" \

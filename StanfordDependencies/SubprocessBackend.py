@@ -12,7 +12,8 @@
 
 import subprocess
 import tempfile
-from .StanfordDependencies import StanfordDependencies
+from .StanfordDependencies import (StanfordDependencies,
+                                   JavaRuntimeVersionError)
 from .CoNLL import Corpus, Sentence
 
 JAVA_CLASS_NAME = 'edu.stanford.nlp.trees.EnglishGrammaticalStructure'
@@ -39,7 +40,7 @@ class SubprocessBackend(StanfordDependencies):
         Currently supported representations are 'basic', 'collapsed',
         'CCprocessed', and 'collapsedTree' which behave the same as they
         in the CoreNLP command line tools."""
-        self.check_representation(representation)
+        self._raise_on_bad_representation(representation)
         with tempfile.NamedTemporaryFile() as input_file:
             for ptb_tree in ptb_trees:
                 input_file.write(ptb_tree + '\n')
@@ -57,10 +58,7 @@ class SubprocessBackend(StanfordDependencies):
             return_code = sd_process.wait()
             stderr = sd_process.stderr.read()
             stdout = sd_process.stdout.read()
-            if return_code:
-                if 'Unsupported major.minor version' in stderr:
-                    self.java_is_too_old()
-                raise RuntimeError("Bad exit code from Stanford CoreNLP")
+            self._raise_on_bad_exitcode(return_code, stderr)
 
         deps_to_exclude = set()
         if not include_erased:
@@ -71,10 +69,20 @@ class SubprocessBackend(StanfordDependencies):
             return token.deprel not in deps_to_exclude
         sentences = Corpus.from_conll(stdout.splitlines(), token_filter=token_filter)
 
-        if len(sentences) != len(ptb_trees):
-            raise RuntimeError("Only got %d sentences from Stanford Dependencies when given %d trees." % (len(sentences), len(ptb_trees)))
+        assert len(sentences) == len(ptb_trees), \
+               "Only got %d sentences from Stanford Dependencies when " \
+               "given %d trees." % (len(sentences), len(ptb_trees))
         return sentences
     def convert_tree(self, ptb_tree, **kwargs):
         """Converts a single Penn Treebank format tree to Stanford
         Dependencies. See convert_trees for more details."""
         return self.convert_trees([ptb_tree], **kwargs)[0]
+
+    @staticmethod
+    def _raise_on_bad_exitcode(return_code, stderr):
+        if return_code:
+            if 'Unsupported major.minor version' in stderr:
+                raise JavaRuntimeVersionError()
+                raise JavaRuntimeVersionError()
+            else:
+                raise ValueError("Bad exit code from Stanford CoreNLP")

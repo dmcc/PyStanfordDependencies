@@ -11,7 +11,8 @@
 # limitations under the License.
 
 import jpype
-from .StanfordDependencies import StanfordDependencies
+from .StanfordDependencies import (StanfordDependencies,
+                                   JavaRuntimeVersionError)
 from .CoNLL import Token
 
 class JPypeBackend(StanfordDependencies):
@@ -48,7 +49,7 @@ class JPypeBackend(StanfordDependencies):
                 print "Try using: StanfordDependencies.get_instance(" \
                       "backend='jpype', version='3.4.1')"
             print
-            self.java_is_too_old()
+            raise JavaRuntimeVersionError()
         trees = self.corenlp.trees
         self.treeReader = trees.Trees.readTree
         self.grammaticalStructure = trees.EnglishGrammaticalStructure
@@ -61,7 +62,7 @@ class JPypeBackend(StanfordDependencies):
         """Arguments are as in StanfordDependencies.convert_trees but with
         the addition of add_lemmas. If add_lemmas=True, we will run the
         Stanford CoreNLP lemmatizer and fill in the lemma field."""
-        self.check_representation(representation)
+        self._raise_on_bad_representation(representation)
         tree = self.treeReader(ptb_tree)
         if include_punct:
             egs = self.grammaticalStructure(tree, self.acceptFilter)

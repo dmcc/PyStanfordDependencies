@@ -67,7 +67,8 @@ class SubprocessBackend(StanfordDependencies):
             deps_to_exclude.add('punct')
         def token_filter(token):
             return token.deprel not in deps_to_exclude
-        sentences = Corpus.from_conll(stdout.splitlines(), token_filter=token_filter)
+        sentences = Corpus.from_conll(stdout.splitlines(),
+                                      token_filter=token_filter)
 
         assert len(sentences) == len(ptb_trees), \
                "Only got %d sentences from Stanford Dependencies when " \
@@ -82,7 +83,6 @@ class SubprocessBackend(StanfordDependencies):
     def _raise_on_bad_exitcode(return_code, stderr):
         if return_code:
             if 'Unsupported major.minor version' in stderr:
-                raise JavaRuntimeVersionError()
                 raise JavaRuntimeVersionError()
             else:
                 raise ValueError("Bad exit code from Stanford CoreNLP")

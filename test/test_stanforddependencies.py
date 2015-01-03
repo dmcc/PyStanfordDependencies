@@ -214,6 +214,11 @@ def test_subprocess_backend_creation_shortcut():
                       download_if_missing=True)
     assert isinstance(sd, SubprocessBackend)
 
+def test_subprocess_backend_creation_newest_version():
+    sd = get_instance(backend='subprocess', version=None,
+                      download_if_missing=True)
+    assert isinstance(sd, SubprocessBackend)
+
 def test_jpype_backend_creation():
     sd = StanfordDependencies.get_instance(backend='jpype',
                                            version='3.4.1',
@@ -322,6 +327,18 @@ class DefaultBackendTest(unittest.TestCase):
 class SubprocessBackendTest(DefaultBackendTest):
     backend = 'subprocess'
     version = '3.4.1'
+
+    def test_raise_on_bad_exitcode(self):
+        self.assertRaises(ValueError,
+                          self.sd._raise_on_bad_exitcode, 100, '')
+        self.assertRaises(ValueError,
+                          self.sd._raise_on_bad_exitcode, 1, '')
+        self.assertRaises(ValueError,
+                          self.sd._raise_on_bad_exitcode, -1, '')
+        self.assertRaises(JavaRuntimeVersionError,
+                          self.sd._raise_on_bad_exitcode, 1,
+                          'Unsupported major.minor version')
+        self.sd._raise_on_bad_exitcode(0, '') # shouldn't raise anything
 
 class JPypeBackendTest(DefaultBackendTest):
     backend = 'jpype'

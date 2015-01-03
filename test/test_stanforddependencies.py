@@ -11,7 +11,8 @@
 # limitations under the License.
 
 import unittest
-from StanfordDependencies import StanfordDependencies, get_instance
+from StanfordDependencies import (StanfordDependencies, get_instance,
+                                  JavaRuntimeVersionError)
 from StanfordDependencies.SubprocessBackend import SubprocessBackend
 from StanfordDependencies.JPypeBackend import JPypeBackend
 
@@ -277,6 +278,13 @@ class DefaultBackendTest(unittest.TestCase):
     def test_bogus_backend_creation(self):
         self.assertRaises(ValueError, StanfordDependencies.get_instance,
                           backend='bogus')
+    def test_bogus_version(self):
+        self.assertRaises(ValueError, StanfordDependencies.get_instance,
+                          version='bogus')
+        self.assertRaises(ValueError, StanfordDependencies.get_instance,
+                          version='0')
+        self.assertRaises(TypeError, StanfordDependencies.get_instance,
+                          version=0)
     def test_insufficient_jar_info(self):
         self.assertRaises(ValueError, StanfordDependencies.get_instance,
                           backend=self.backend, jar_filename=None,
@@ -285,6 +293,14 @@ class DefaultBackendTest(unittest.TestCase):
         assert self.sd.get_jar_url(version='3.5.0') == \
             "http://search.maven.org/remotecontent?filepath=edu/" \
             "stanford/nlp/stanford-corenlp/3.5.0/stanford-corenlp-3.5.0.jar"
+        # unclear what it should be since it can change but it should
+        # at least be a true value
+        assert self.sd.get_jar_url()
+    def test_get_jar_url_bad_version(self):
+        self.assertRaises(TypeError, self.sd.get_jar_url, 0)
+        self.assertRaises(TypeError, self.sd.get_jar_url, -1)
+        self.assertRaises(TypeError, self.sd.get_jar_url, 10)
+        self.assertRaises(TypeError, self.sd.get_jar_url, (3, 5, 0))
 
     def assertConverts(self, tree, expected, **conversion_options):
         print 'tree:'
@@ -313,3 +329,6 @@ class JPypeBackendTest(DefaultBackendTest):
 
     def test_add_lemmas(self):
         self.assertConverts(tree5, tree5_out_basic_lemmas, add_lemmas=True)
+    def test_report_version_error(self):
+        self.assertRaises(JavaRuntimeVersionError,
+                          self.sd._report_version_error, '1.6')

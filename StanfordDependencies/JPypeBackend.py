@@ -75,10 +75,11 @@ class JPypeBackend(StanfordDependencies):
             deps = egs.typedDependenciesCollapsed(True)
         elif representation == 'CCprocessed':
             deps = egs.typedDependenciesCCprocessed(True)
-        elif representation == 'collapsedTree':
-            deps = egs.typedDependenciesCollapsedTree()
         else:
-            raise ValueError("Unknown representation: %r" % representation)
+            # _raise_on_bad_representation should ensure that this
+            # assertion doesn't fail
+            assert representation == 'collapsedTree'
+            deps = egs.typedDependenciesCollapsedTree()
 
         head_and_deprel = {}
         for dep in deps:

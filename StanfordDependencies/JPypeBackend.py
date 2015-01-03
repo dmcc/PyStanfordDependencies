@@ -45,13 +45,16 @@ class JPypeBackend(StanfordDependencies):
             print "Your Java version:", version
             if version.split('.')[:2] < ['1', '8']:
                 print "The last CoreNLP release for Java 1.6/1.7 was 3.4.1"
-                print "Try using: StanfordDependencies.get_instance(backend='jpype', version='3.4.1')"
+                print "Try using: StanfordDependencies.get_instance(" \
+                      "backend='jpype', version='3.4.1')"
             print
             self.java_is_too_old()
         trees = self.corenlp.trees
         self.treeReader = trees.Trees.readTree
         self.grammaticalStructure = trees.EnglishGrammaticalStructure
         self.stemmer = self.corenlp.process.Morphology.stemStaticSynchronized
+        self.puncFilter = trees.PennTreebankLanguagePack(). \
+                          punctuationWordRejectFilter().accept
     def convert_tree(self, ptb_tree, representation='basic',
                      include_punct=True, include_erased=False,
                      add_lemmas=False):
@@ -84,13 +87,15 @@ class JPypeBackend(StanfordDependencies):
         words = tree.taggedYield()
         tokens = []
         for index, word in enumerate(words, 1):
+            form = word.value()
             if index in head_and_deprel:
                 head, deprel = head_and_deprel[index]
             elif include_erased:
+                if not include_punct and not self.puncFilter(form):
+                    continue
                 head, deprel = 0, 'erased'
             else:
                 continue
-            form = word.value()
             tag = word.tag()
             if add_lemmas:
                 lemma = self.stemmer(form, tag).word()

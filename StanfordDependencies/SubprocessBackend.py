@@ -14,7 +14,7 @@ import subprocess
 import tempfile
 from .StanfordDependencies import (StanfordDependencies,
                                    JavaRuntimeVersionError)
-from .CoNLL import Corpus, Sentence
+from .CoNLL import Corpus
 
 JAVA_CLASS_NAME = 'edu.stanford.nlp.trees.EnglishGrammaticalStructure'
 
@@ -71,8 +71,8 @@ class SubprocessBackend(StanfordDependencies):
                                       token_filter=token_filter)
 
         assert len(sentences) == len(ptb_trees), \
-               "Only got %d sentences from Stanford Dependencies when " \
-               "given %d trees." % (len(sentences), len(ptb_trees))
+            "Only got %d sentences from Stanford Dependencies when " \
+            "given %d trees." % (len(sentences), len(ptb_trees))
         return sentences
     def convert_tree(self, ptb_tree, **kwargs):
         """Converts a single Penn Treebank format tree to Stanford

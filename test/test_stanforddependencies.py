@@ -15,9 +15,6 @@ from StanfordDependencies import StanfordDependencies, get_instance
 from StanfordDependencies.SubprocessBackend import SubprocessBackend
 from StanfordDependencies.JPypeBackend import JPypeBackend
 
-# TODO test include_punct, include_erased
-#      test JPypeBackend's extras: add_lemmas
-
 # these trees are produced with SD 3.4.1 since it allows us to test
 # on older JREs
 tree1 = '(S1 (NP (DT a) (NN cow)))'
@@ -305,7 +302,9 @@ class DefaultBackendTest(unittest.TestCase):
         print stringified
         print 'expected stringified:'
         print expected_stringification
+        print 'matches:', stringified == expected_stringification
         assert stringified == expected_stringification
+        print
 
 class SubprocessBackendTest(DefaultBackendTest):
     backend = 'subprocess'

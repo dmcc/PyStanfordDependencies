@@ -11,6 +11,7 @@
 # limitations under the License.
 
 from abc import ABCMeta, abstractmethod
+import urllib
 
 # ideally, this will be set to the latest version of CoreNLP
 DEFAULT_CORENLP_VERSION = '3.5.0'
@@ -28,6 +29,11 @@ class JavaRuntimeVersionError(EnvironmentError):
         message = "Your Java runtime is too old (must be 1.8+ to use " \
                   "CoreNLP version 3.5.0 or later)"
         super(JavaRuntimeVersionError, self).__init__(message)
+
+class ErrorAwareURLOpener(urllib.FancyURLopener):
+    def http_error_default(self, url, fp, errcode, errmsg, headers):
+        raise ValueError("Error downloading %r: %s %s" %
+                         (url, errcode, errmsg))
 
 class StanfordDependencies:
     """Abstract base class for converting Penn Treebank trees to Stanford
@@ -54,12 +60,14 @@ class StanfordDependencies:
         a jar file and store it locally. By default it will use
         DEFAULT_CORENLP_VERSION but will use the version flag if
         that argument is specified."""
-        if not (jar_filename or version or download_if_missing):
-            raise ValueError("Must set either jar_filename, version, or download_if_missing to True.")
+        if not (jar_filename or version is not None or download_if_missing):
+            raise ValueError("Must set either jar_filename, version, "
+                             "or download_if_missing to True.")
 
         self.jar_filename = jar_filename
         if not self.jar_filename:
-            version = version or DEFAULT_CORENLP_VERSION
+            if version is None:
+                version = DEFAULT_CORENLP_VERSION
             filename = 'stanford-corenlp-%s.jar' % version
             self.jar_filename = self.setup_and_get_default_path(filename)
             if download_if_missing:
@@ -96,7 +104,6 @@ class StanfordDependencies:
         the full path for where the jar file should be installed."""
         import os
         import os.path
-
         install_dir = os.path.expanduser(INSTALL_DIR)
         try:
             os.makedirs(install_dir)
@@ -111,12 +118,14 @@ class StanfordDependencies:
         latest but we can't guarantee that since PyStanfordDependencies
         is distributed separately)."""
         import os.path
-        if not os.path.exists(self.jar_filename):
-            jar_url = self.get_jar_url(version)
-            if verbose:
-                print "Downloading %r -> %r" % (jar_url, self.jar_filename)
-            import urllib
-            urllib.urlretrieve(jar_url, filename=self.jar_filename)
+        if os.path.exists(self.jar_filename):
+            return
+
+        jar_url = self.get_jar_url(version)
+        if verbose:
+            print "Downloading %r -> %r" % (jar_url, self.jar_filename)
+        opener = ErrorAwareURLOpener()
+        opener.retrieve(jar_url, filename=self.jar_filename)
 
     @staticmethod
     def _raise_on_bad_representation(representation):
@@ -125,20 +134,24 @@ class StanfordDependencies:
         invalid)."""
         if representation not in REPRESENTATIONS:
             repr_desc = ', '.join(map(repr, REPRESENTATIONS))
-            raise ValueError("Unknown representation: %r (should be one " \
+            raise ValueError("Unknown representation: %r (should be one "
                              "of %s)" % (representation, repr_desc))
 
     @staticmethod
     def get_jar_url(version=None):
         """Get the URL to a Stanford CoreNLP jar file with a specific
-        version. These jars come from Maven since the maven version is
+        version. These jars come from Maven since the Maven version is
         smaller than the full CoreNLP distributions. Defaults to
         DEFAULT_CORENLP_VERSION."""
-        version = version or DEFAULT_CORENLP_VERSION
+        if version is None:
+            version = DEFAULT_CORENLP_VERSION
+        if not isinstance(version, basestring):
+            raise TypeError("Version must be a string or None (got %r)." %
+                            version)
         jar_filename = 'stanford-corenlp-%s.jar' % version
         return 'http://search.maven.org/remotecontent?filepath=' + \
-            'edu/stanford/nlp/stanford-corenlp/%s/%s' % (version,
-                                                         jar_filename)
+               'edu/stanford/nlp/stanford-corenlp/%s/%s' % (version,
+                                                            jar_filename)
 
     @staticmethod
     def get_instance(jar_filename=None, version=None,
@@ -190,7 +203,8 @@ class StanfordDependencies:
             from SubprocessBackend import SubprocessBackend
             return SubprocessBackend(**extra_args)
 
-        raise ValueError("Unknown backend: %r (known backends: 'subprocess' and 'jpype')" % backend)
+        raise ValueError("Unknown backend: %r (known backends: "
+                         "'subprocess' and 'jpype')" % backend)
 
 def get_instance(*args, **kwargs):
     """Convenience method, see StanfordDependencies.get_instance()

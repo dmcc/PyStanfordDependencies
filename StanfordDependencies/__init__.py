@@ -78,8 +78,9 @@ Written by David McClosky (`homepage
 Bug reports and feature requests: `GitHub issue tracker
 <http://github.com/dmcc/PyStanfordDependencies/issues>`_
 
-Release history summary
------------------------
+Release summaries
+-----------------
+- 0.1.3 (2015.01.03): Bugfixes, coveralls integration, refactoring
 - 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI
   support, bugfixes
 - 0.1.1 (2014.12.15): More docs, fewer bugs
@@ -92,5 +93,5 @@ from .CoNLL import Token
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __email__ = 'notsoweird+pystanforddependencies@gmail.com'

@@ -89,7 +89,9 @@ Release summaries
 
 from .StanfordDependencies import (StanfordDependencies, get_instance,
                                    JavaRuntimeVersionError)
-from .CoNLL import Token
+from .CoNLL import Corpus, Sentence, Token
+__all__ = (StanfordDependencies, get_instance, JavaRuntimeVersionError,
+           Corpus, Sentence, Token)
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'

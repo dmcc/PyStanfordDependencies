@@ -6,6 +6,7 @@ Release checklist
 1.  Version bumps in StanfordDependencies/__init__.py and setup.py
 2.  Update release history in README.rst
 3.  Sync README.rst content with StanfordDependencies/__init__.py
+    (roughly: vimdiff -g README.rst StanfordDependencies/__init__.py)
 4.  Run nosetests and flake8 again, commit changes
 5.  shell> python setup.py register sdist upload
 6.  Edit PyPI description, add keywords

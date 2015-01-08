@@ -75,6 +75,7 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
+- 0.1.4 (2015.01.07): Fix CCprocessed support
 - 0.1.3 (2015.01.03): Bugfixes, coveralls integration, refactoring
 - 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI
   support, bugfixes

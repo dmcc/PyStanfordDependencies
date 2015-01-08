@@ -11,6 +11,16 @@
 # limitations under the License.
 
 from collections import namedtuple
+import re
+
+# picks out (tag, word) from Penn Treebank-style trees
+ptb_tags_and_words_re = re.compile(r'\(\s*([^\s()]+)\s+([^\s()]+)\s*\)')
+
+# picks out (deprel, gov, govindex, dep, depindex) from Stanford
+# Dependencies text (e.g., "nsubj(word-1, otherword-2)")
+deps_re = re.compile(r'^\s*([^\s()]+)\(([^\s()]+)-(\d+),\s+'
+                     r'([^\s()]+)-(\d+)\)\s*$',
+                     re.M)
 
 # CoNLL-X field names
 FIELD_NAMES = ('index', 'form', 'lemma', 'cpos', 'pos', 'feats', 'head',
@@ -64,6 +74,54 @@ class Sentence(list):
     def as_conll(self):
         """Represent this Sentence in CoNLL-X format."""
         return '\n'.join(token.as_conll() for token in self)
+    @classmethod
+    def from_stanford_dependencies(this_class, stream, tree,
+                                   include_erased=False, include_punct=True):
+        """stream is an iterable over strings where each string is a
+        line representing a Stanford Dependency as in the output of the
+        command line Stanford Dependency tool:
+
+            deprel(gov-index, dep-depindex)
+
+        The corresponding Penn Treebank formatted tree must be provided
+        as well. Returns a Sentence object (essentially a list of Token
+        objects)."""
+        sentence = this_class()
+        covered_indices = set()
+        tags_and_words = ptb_tags_and_words_re.findall(tree)
+        for line in stream:
+            if not line.strip():
+                if sentence:
+                    # empty line means the sentence is over
+                    break
+                else:
+                    continue
+            matches = deps_re.findall(line)
+            assert len(matches) == 1
+            deprel, gov_form, head, form, index = matches[0]
+            index = int(index)
+            tag, word = tags_and_words[index - 1]
+            assert form == word
+            covered_indices.add(index)
+
+            if not include_punct and deprel == 'punct':
+                continue
+            token = Token(index, form, None, tag, tag, None, int(head),
+                          deprel, None, None)
+            sentence.append(token)
+
+        if include_erased:
+            # look through words in the tree to see if any of them
+            # were erased
+            for index, (tag, word) in enumerate(tags_and_words, 1):
+                if index in covered_indices:
+                    continue
+                token = Token(index, word, None, tag, tag, None, 0,
+                              'erased', None, None)
+                sentence.append(token)
+
+        sentence.sort()
+        return sentence
 
 class Corpus(list):
     """Sequence of Sentence objects."""
@@ -71,11 +129,10 @@ class Corpus(list):
         """Represent the entire corpus in CoNLL-X format."""
         return '\n'.join(sentence.as_conll() for sentence in self)
     @classmethod
-    def from_conll(this_class, stream, token_filter=None):
-        """stream is an iterable over strings. Returns a list of Sentence
-        objects (essentially a list of Token objects). token_filter is
-        an optional predicate applied to each Token. If False, we will
-        not include the Token in the Sentence."""
+    def from_conll(this_class, stream):
+        """stream is an iterable over strings where each string is a
+        line in CoNLL-X format. Returns a Corpus object (essentially a
+        list of Sentence objects)."""
         current_sentence = []
         corpus = this_class()
         def flush():
@@ -86,10 +143,30 @@ class Corpus(list):
             line = line.strip()
             if line:
                 token = Token.from_conll(line)
-                if token_filter and not token_filter(token):
-                    continue
                 current_sentence.append(token)
             else:
                 flush()
         flush()
+        return corpus
+    @classmethod
+    def from_stanford_dependencies(this_class, stream, trees,
+                                   include_erased=False, include_punct=True):
+        """stream is an iterable over strings where each string is a
+        line representing a Stanford Dependency as in the output of the
+        command line Stanford Dependency tool:
+
+            deprel(gov-index, dep-depindex)
+
+        Sentences are separated by blank lines. A corresponding list of
+        Penn Treebank formatted trees must be provided as well. Returns
+        a Corpus object (list of Sentence objects which are a list of
+        Token objects)."""
+        stream = iter(stream)
+        corpus = this_class()
+        for tree in trees:
+            sentence = Sentence.from_stanford_dependencies(stream,
+                                                           tree,
+                                                           include_erased,
+                                                           include_punct)
+            corpus.append(sentence)
         return corpus

@@ -13,7 +13,7 @@
 import jpype
 from .StanfordDependencies import (StanfordDependencies,
                                    JavaRuntimeVersionError)
-from .CoNLL import Token
+from .CoNLL import Token, Sentence
 
 class JPypeBackend(StanfordDependencies):
     """Faster backend than SubprocessBackend but requires you to install
@@ -51,6 +51,7 @@ class JPypeBackend(StanfordDependencies):
         self.stemmer = self.corenlp.process.Morphology.stemStaticSynchronized
         self.puncFilter = trees.PennTreebankLanguagePack(). \
             punctuationWordRejectFilter().accept
+        self.lemma_cache = {}
     def convert_tree(self, ptb_tree, representation='basic',
                      include_punct=True, include_erased=False,
                      add_lemmas=False):
@@ -59,6 +60,56 @@ class JPypeBackend(StanfordDependencies):
         Stanford CoreNLP lemmatizer and fill in the lemma field."""
         self._raise_on_bad_representation(representation)
         tree = self.treeReader(ptb_tree)
+        deps = self._get_deps(tree, include_punct, representation)
+
+        indices_to_words = dict(enumerate(tree.taggedYield(), 1))
+        tokens = Sentence()
+        covered_indices = set()
+
+        def add_token(index, form, head, deprel):
+            tag = indices_to_words[index].tag()
+            if add_lemmas:
+                lemma = self.stem(form, tag)
+            else:
+                lemma = None
+            token = Token(index=index, form=form, lemma=lemma, cpos=tag,
+                          pos=tag, feats=None, head=head, deprel=deprel,
+                          phead=None, pdeprel=None)
+            tokens.append(token)
+
+        # add token for each dependency
+        for dep in deps:
+            index = dep.dep().index()
+            head = dep.gov().index()
+            deprel = dep.reln().toString()
+            form = indices_to_words[index].value()
+
+            add_token(index, form, head, deprel)
+            covered_indices.add(index)
+        if include_erased:
+            # see if there are any tokens that were erased
+            # and add them as well
+            all_indices = set(indices_to_words.keys())
+            for index in all_indices - covered_indices:
+                form = indices_to_words[index].value()
+                if not include_punct and not self.puncFilter(form):
+                    continue
+                add_token(index, form, head=0, deprel='erased')
+            # erased generally disrupt the ordering of the sentence
+            tokens.sort()
+        return tokens
+    def stem(self, form, tag):
+        """Returns the stem of word with specific form and part-of-speech
+        tag according to the Stanford lemmatizer. Lemmas are cached."""
+        key = (form, tag)
+        if key not in self.lemma_cache:
+            lemma = self.stemmer(*key).word()
+            self.lemma_cache[key] = lemma
+        return self.lemma_cache[key]
+
+    def _get_deps(self, tree, include_punct, representation):
+        """Get a list of dependencies from a Stanford Treee for a specific
+        Stanford Dependencies representation."""
         if include_punct:
             egs = self.grammaticalStructure(tree, self.acceptFilter)
         else:
@@ -75,34 +126,7 @@ class JPypeBackend(StanfordDependencies):
             # assertion doesn't fail
             assert representation == 'collapsedTree'
             deps = egs.typedDependenciesCollapsedTree()
-
-        head_and_deprel = {}
-        for dep in deps:
-            head_and_deprel[dep.dep().index()] = (dep.gov().index(),
-                                                  dep.reln().toString())
-
-        words = tree.taggedYield()
-        tokens = []
-        for index, word in enumerate(words, 1):
-            form = word.value()
-            if index in head_and_deprel:
-                head, deprel = head_and_deprel[index]
-            elif include_erased:
-                if not include_punct and not self.puncFilter(form):
-                    continue
-                head, deprel = 0, 'erased'
-            else:
-                continue
-            tag = word.tag()
-            if add_lemmas:
-                lemma = self.stemmer(form, tag).word()
-            else:
-                lemma = None
-            token = Token(index=index, form=form, lemma=lemma, cpos=tag,
-                          pos=tag, feats=None, head=head, deprel=deprel,
-                          phead=None, pdeprel=None)
-            tokens.append(token)
-        return tokens
+        return deps
 
     @staticmethod
     def _report_version_error(version):

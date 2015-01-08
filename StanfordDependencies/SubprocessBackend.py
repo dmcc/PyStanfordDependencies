@@ -31,7 +31,7 @@ class SubprocessBackend(StanfordDependencies):
                                       version)
         self.java_command = java_command
     def convert_trees(self, ptb_trees, java='java', representation='basic',
-                      include_punct=True, include_erased=False):
+                      include_punct=True, include_erased=False, debug=False):
         """Convert a list of Penn Treebank formatted trees (ptb_trees)
         into Stanford Dependencies. The dependencies are represented
         as a list of sentences, where each sentence is itself a list of
@@ -39,7 +39,10 @@ class SubprocessBackend(StanfordDependencies):
 
         Currently supported representations are 'basic', 'collapsed',
         'CCprocessed', and 'collapsedTree' which behave the same as they
-        in the CoreNLP command line tools."""
+        in the CoreNLP command line tools.
+
+        Setting debug=True will cause debugging information (including
+        the java command run to be printed."""
         self._raise_on_bad_representation(representation)
         with tempfile.NamedTemporaryFile() as input_file:
             for ptb_tree in ptb_trees:
@@ -51,24 +54,24 @@ class SubprocessBackend(StanfordDependencies):
                        '-cp', self.jar_filename,
                        JAVA_CLASS_NAME,
                        '-' + representation,
-                       '-treeFile', input_file.name,
-                       '-conllx']
+                       '-treeFile', input_file.name]
+            # if we're including erased, we want to include punctuation
+            # since otherwise we won't know what SD considers punctuation
+            if include_punct or include_erased:
+                command.append('-keepPunct')
+            if debug:
+                print 'Command:', ' '.join(command)
             sd_process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                           stderr=subprocess.PIPE)
             return_code = sd_process.wait()
             stderr = sd_process.stderr.read()
             stdout = sd_process.stdout.read()
-            self._raise_on_bad_exitcode(return_code, stderr)
+            self._raise_on_bad_exitcode(return_code, stderr, debug)
 
-        deps_to_exclude = set()
-        if not include_erased:
-            deps_to_exclude.add('erased')
-        if not include_punct:
-            deps_to_exclude.add('punct')
-        def token_filter(token):
-            return token.deprel not in deps_to_exclude
-        sentences = Corpus.from_conll(stdout.splitlines(),
-                                      token_filter=token_filter)
+        sentences = Corpus.from_stanford_dependencies(stdout.splitlines(),
+                                                      ptb_trees,
+                                                      include_erased,
+                                                      include_punct)
 
         assert len(sentences) == len(ptb_trees), \
             "Only got %d sentences from Stanford Dependencies when " \
@@ -80,7 +83,12 @@ class SubprocessBackend(StanfordDependencies):
         return self.convert_trees([ptb_tree], **kwargs)[0]
 
     @staticmethod
-    def _raise_on_bad_exitcode(return_code, stderr):
+    def _raise_on_bad_exitcode(return_code, stderr, debug=False):
+        if debug:
+            print 'Exit code:', return_code
+            if stderr.strip():
+                print 'stderr:', stderr
+
         if return_code:
             if 'Unsupported major.minor version' in stderr:
                 raise JavaRuntimeVersionError()

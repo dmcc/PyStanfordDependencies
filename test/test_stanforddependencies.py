@@ -82,6 +82,7 @@ tree4_out_CCprocessed = '''
 Token(index=1, form='A', cpos='DT', pos='DT', head=2, deprel='det')
 Token(index=2, form='burrito', cpos='NN', pos='NN', head=0, deprel='root')
 Token(index=4, form='beans', cpos='NNS', pos='NNS', head=2, deprel='prep_with')
+Token(index=7, form='chicken', cpos='NN', pos='NN', head=2, deprel='prep_with')
 Token(index=7, form='chicken', cpos='NN', pos='NN', head=4, deprel='conj_negcc')
 Token(index=8, form='.', cpos='.', pos='.', head=2, deprel='punct')
 '''.strip()
@@ -126,11 +127,13 @@ Token(index=10, form='rice', cpos='NN', pos='NN', head=7, deprel='conj_negcc')
 Token(index=11, form='.', cpos='.', pos='.', head=2, deprel='punct')
 '''.strip()
 tree5_out_CCprocessed = '''
+Token(index=1, form='Ed', cpos='NNP', pos='NNP', head=2, deprel='nsubj')
 Token(index=1, form='Ed', cpos='NNP', pos='NNP', head=4, deprel='nsubj')
 Token(index=2, form='cooks', cpos='VBZ', pos='VBZ', head=0, deprel='root')
 Token(index=4, form='sells', cpos='VBZ', pos='VBZ', head=2, deprel='conj_and')
 Token(index=5, form='burritos', cpos='NNS', pos='NNS', head=2, deprel='dobj')
 Token(index=7, form='beans', cpos='NNS', pos='NNS', head=5, deprel='prep_with')
+Token(index=10, form='rice', cpos='NN', pos='NN', head=5, deprel='prep_with')
 Token(index=10, form='rice', cpos='NN', pos='NN', head=7, deprel='conj_negcc')
 Token(index=11, form='.', cpos='.', pos='.', head=2, deprel='punct')
 '''.strip()
@@ -338,7 +341,14 @@ class SubprocessBackendTest(DefaultBackendTest):
         self.assertRaises(JavaRuntimeVersionError,
                           self.sd._raise_on_bad_exitcode, 1,
                           'Unsupported major.minor version')
+        self.assertRaises(JavaRuntimeVersionError,
+                          self.sd._raise_on_bad_exitcode, -7,
+                          'Unsupported major.minor version',
+                          debug=True)
         self.sd._raise_on_bad_exitcode(0, '') # shouldn't raise anything
+
+    def test_convert_debug(self):
+        self.assertConverts(tree1, tree1_out, debug=True)
 
 class JPypeBackendTest(DefaultBackendTest):
     backend = 'jpype'

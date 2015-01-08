@@ -10,7 +10,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from StanfordDependencies.CoNLL import Corpus
+from StanfordDependencies.CoNLL import Corpus, Sentence
+from test_stanforddependencies import (tree4, tree4_out_CCprocessed,
+                                       tree5, tree5_out_CCprocessed,
+                                       tree5_out_collapsedTree_no_punc,
+                                       stringify_sentence)
 
 def test_readwrite():
     # example from http://ilk.uvt.nl/conll/example.html
@@ -25,3 +29,145 @@ def test_readwrite():
     
     corpus = Corpus.from_conll(sample_text.splitlines())
     assert corpus.as_conll() == sample_text.strip()
+
+def test_read_sd_sentence():
+    sample_deps = '''
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+    '''.strip().splitlines()
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    assert stringify_sentence(sentence) == tree4_out_CCprocessed
+
+def test_read_sd_sentence_extra_space():
+    sample_deps = '''
+
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+
+
+    '''.splitlines()
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    assert stringify_sentence(sentence) == tree4_out_CCprocessed
+
+def test_read_sd_sentence_punct():
+    sample_deps = '''
+root(ROOT-0, Sentences-1)
+punct(Sentences-1, :-2)
+dep(Sentences-1, words-3)
+punct(sometimes-8, -LRB--4)
+prep(sometimes-8, with-5)
+pobj(with-5, punctuation-6)
+punct(sometimes-8, ---7)
+dep(words-3, sometimes-8)
+punct(sometimes-8, -RRB--9)
+punct(Sentences-1, .-10)
+    '''.strip().splitlines()
+    tree = '''(ROOT (NP (NP (NNS Sentences)) (: :) (NP (NP (NNS words))
+    (PRN (-LRB- -LRB-) (FRAG (PP (IN with) (NP (NN punctuation))) (: --)
+    (ADVP (RB sometimes))) (-RRB- -RRB-))) (. .)))'''
+    output = '''
+Token(index=1, form='Sentences', cpos='NNS', pos='NNS', head=0, deprel='root')
+Token(index=2, form=':', cpos=':', pos=':', head=1, deprel='punct')
+Token(index=3, form='words', cpos='NNS', pos='NNS', head=1, deprel='dep')
+Token(index=4, form='-LRB-', cpos='-LRB-', pos='-LRB-', head=8, deprel='punct')
+Token(index=5, form='with', cpos='IN', pos='IN', head=8, deprel='prep')
+Token(index=6, form='punctuation', cpos='NN', pos='NN', head=5, deprel='pobj')
+Token(index=7, form='--', cpos=':', pos=':', head=8, deprel='punct')
+Token(index=8, form='sometimes', cpos='RB', pos='RB', head=3, deprel='dep')
+Token(index=9, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=8, deprel='punct')
+Token(index=10, form='.', cpos='.', pos='.', head=1, deprel='punct')
+    '''.strip()
+
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree)
+    assert stringify_sentence(sentence) == output
+
+    output_no_punct = '''
+Token(index=1, form='Sentences', cpos='NNS', pos='NNS', head=0, deprel='root')
+Token(index=3, form='words', cpos='NNS', pos='NNS', head=1, deprel='dep')
+Token(index=5, form='with', cpos='IN', pos='IN', head=8, deprel='prep')
+Token(index=6, form='punctuation', cpos='NN', pos='NN', head=5, deprel='pobj')
+Token(index=8, form='sometimes', cpos='RB', pos='RB', head=3, deprel='dep')
+    '''.strip()
+    sentence2 = Sentence.from_stanford_dependencies(sample_deps, tree,
+                                                    include_punct=False)
+    assert stringify_sentence(sentence2) == output_no_punct
+
+    sentence3 = Sentence.from_stanford_dependencies(sample_deps, tree,
+                                                    include_punct=False,
+                                                    include_erased=True)
+    assert stringify_sentence(sentence3) == output_no_punct
+
+    sentence4 = Sentence.from_stanford_dependencies(sample_deps, tree,
+                                                    include_punct=True,
+                                                    include_erased=True)
+    assert stringify_sentence(sentence4) == output
+
+    tree2 = '(ROOT(NP(NP-SBJ(NNS Sentences))(: :)(NP(NP(NNS words))(PRN(-LRB- -LRB-)(FRAG(PP(IN with)(NP(NN punctuation)))(: --)(ADVP(RB sometimes)))(-RRB- -RRB-)))(. .)))'
+    sentence5 = Sentence.from_stanford_dependencies(sample_deps, tree2)
+    assert sentence5 == sentence
+
+    tree3 = '((NP(NP(NNS Sentences))(: :)(NP(NP(NNS words))(PRN(-LRB- -LRB-)(FRAG(PP(IN with)(NP(NN punctuation)))(: --)(ADVP(RB sometimes)))(-RRB- -RRB-)))(. .)))'
+    sentence6 = Sentence.from_stanford_dependencies(sample_deps, tree3)
+    assert sentence6 == sentence
+
+    tree4 = ' ( ROOT(NP   ( NP-SBJ (NNS Sentences))(: :)(\nNP\n(NP(NNS\nwords)) (PRN (-LRB- -LRB-)(FRAG(PP    (IN with\n)\t(NP(NN punctuation )))(: --)(ADVP( RB sometimes )))(-RRB-    \t-RRB-)))(.\n\n\t.)))    '
+    sentence7 = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    assert sentence7 == sentence
+
+def test_read_sd_sentence_sorting():
+    # same as test_read_sd_sentence but check sorting
+    sample_deps = '''
+punct(burrito-2, .-8)
+conj_negcc(beans-4, chicken-7)
+prep_with(burrito-2, chicken-7)
+prep_with(burrito-2, beans-4)
+root(ROOT-0, burrito-2)
+det(burrito-2, A-1)
+    '''.strip().splitlines()
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    assert stringify_sentence(sentence) == tree4_out_CCprocessed
+
+def test_read_sd_corpus_single():
+    sample_deps = '''
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+    '''.strip().splitlines()
+    corpus = Corpus.from_stanford_dependencies(sample_deps, [tree4])
+    assert len(corpus) == 1
+    assert stringify_sentence(corpus[0]) == tree4_out_CCprocessed
+
+def test_read_sd_corpus_multiple():
+    sample_deps = '''
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+
+nsubj(cooks-2, Ed-1)                          
+nsubj(sells-4, Ed-1)
+root(ROOT-0, cooks-2)
+conj_and(cooks-2, sells-4)
+dobj(cooks-2, burritos-5)
+prep_with(burritos-5, beans-7)
+prep_with(burritos-5, rice-10)
+conj_negcc(beans-7, rice-10)
+punct(cooks-2, .-11)
+    '''.strip().splitlines()
+    corpus = Corpus.from_stanford_dependencies(sample_deps, [tree4, tree5])
+    assert len(corpus) == 2
+    assert stringify_sentence(corpus[0]) == tree4_out_CCprocessed
+    assert stringify_sentence(corpus[1]) == tree5_out_CCprocessed

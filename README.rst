@@ -46,8 +46,16 @@ respectively::
 This tells you that ``moose`` is the head of the sentence and is
 modified by ``some`` (with a ``det`` = determiner relation) and ``blue``
 (with an ``amod`` = adjective modifier relation). Fields on ``Token``
-objects are readable as attributes. See docs for addtional options in
+objects are readable as attributes. See docs for additional options in
 ``convert_tree()`` and ``convert_trees()``.
+
+If you have the `asciitree <https://pypi.python.org/pypi/asciitree>`_
+package, you can use a prettier formatter::
+
+    >>> print sent.as_asciitree()
+     moose [root]
+      +-- some [det]
+      +-- blue [amod]
 
 Backends
 --------
@@ -75,6 +83,7 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
+- 0.1.5 (2015.01.10): Support for ASCII tree formatting
 - 0.1.4 (2015.01.07): Fix CCprocessed support
 - 0.1.3 (2015.01.03): Bugfixes, coveralls integration, refactoring
 - 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI

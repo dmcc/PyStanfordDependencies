@@ -9,6 +9,7 @@ cache:
 install:
   - pip install jpype1
   - pip install python-coveralls
+  - pip install asciitree
 script:
   - pip install .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies

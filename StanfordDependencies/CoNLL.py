@@ -74,18 +74,69 @@ class Sentence(list):
     def as_conll(self):
         """Represent this Sentence in CoNLL-X format."""
         return '\n'.join(token.as_conll() for token in self)
+    def as_asciitree(self, str_func=None):
+        """Represent this Sentence as an ASCII tree string. Requires
+        the asciitree package. A default token stringifier is provided
+        but for custom formatting, specify a str_func which should take
+        a single Token and return a string."""
+        import asciitree
+        from collections import defaultdict
+        children = defaultdict(list)
+        # since erased nodes may be missing, multiple tokens may have same
+        # index (CCprocessed), etc.
+        token_to_index = {}
+        roots = []
+        for token in self:
+            children[token.head].append(token)
+            token_to_index[token] = token.index
+            if token.head == 0:
+                roots.append(token)
+        assert roots, "Couldn't find root Token(s)"
+
+        if len(roots) > 1:
+            # multiple roots so we make a fake one to be their parent
+            root = Token(0, 'ROOT', 'ROOT-LEMMA', 'ROOT-CPOS', 'ROOT-POS',
+                         None, None, 'ROOT-DEPREL', None, None)
+            token_to_index[root] = 0
+            children[0] = roots
+        else:
+            root = roots[0]
+
+        def child_func(token):
+            index = token_to_index[token]
+            return children[index]
+        if not str_func:
+            def str_func(token):
+                return ' %s [%s]' % (token.form, token.deprel)
+
+        return asciitree.draw_tree(root, child_func, str_func)
+
+    @classmethod
+    def from_conll(this_class, stream):
+        """Construct a Sentence. stream is an iterable over strings where
+        each string is a line in CoNLL-X format. If there are multiple
+        sentences in this stream, we only return the first one."""
+        stream = iter(stream)
+        sentence = this_class()
+        for line in stream:
+            line = line.strip()
+            if line:
+                sentence.append(Token.from_conll(line))
+            elif sentence:
+                return sentence
+        return sentence
     @classmethod
     def from_stanford_dependencies(this_class, stream, tree,
                                    include_erased=False, include_punct=True):
-        """stream is an iterable over strings where each string is a
-        line representing a Stanford Dependency as in the output of the
-        command line Stanford Dependency tool:
+        """Construct a Sentence. stream is an iterable over strings
+        where each string is a line representing a Stanford Dependency
+        as in the output of the command line Stanford Dependency tool:
 
             deprel(gov-index, dep-depindex)
 
         The corresponding Penn Treebank formatted tree must be provided
-        as well. Returns a Sentence object (essentially a list of Token
-        objects)."""
+        as well."""
+        stream = iter(stream)
         sentence = this_class()
         covered_indices = set()
         tags_and_words = ptb_tags_and_words_re.findall(tree)
@@ -130,37 +181,29 @@ class Corpus(list):
         return '\n'.join(sentence.as_conll() for sentence in self)
     @classmethod
     def from_conll(this_class, stream):
-        """stream is an iterable over strings where each string is a
-        line in CoNLL-X format. Returns a Corpus object (essentially a
-        list of Sentence objects)."""
-        current_sentence = []
+        """Construct a Corpus. stream is an iterable over strings where
+        each string is a line in CoNLL-X format."""
+        stream = iter(stream)
         corpus = this_class()
-        def flush():
-            if current_sentence:
-                corpus.append(Sentence(current_sentence))
-                del current_sentence[:]
-        for line in stream:
-            line = line.strip()
-            if line:
-                token = Token.from_conll(line)
-                current_sentence.append(token)
+        while 1:
+            # read until we get an empty sentence
+            sentence = Sentence.from_conll(stream)
+            if sentence:
+                corpus.append(sentence)
             else:
-                flush()
-        flush()
+                break
         return corpus
     @classmethod
     def from_stanford_dependencies(this_class, stream, trees,
                                    include_erased=False, include_punct=True):
-        """stream is an iterable over strings where each string is a
-        line representing a Stanford Dependency as in the output of the
-        command line Stanford Dependency tool:
+        """Construct a Corpus. stream is an iterable over strings where
+        each string is a line representing a Stanford Dependency as in
+        the output of the command line Stanford Dependency tool:
 
             deprel(gov-index, dep-depindex)
 
         Sentences are separated by blank lines. A corresponding list of
-        Penn Treebank formatted trees must be provided as well. Returns
-        a Corpus object (list of Sentence objects which are a list of
-        Token objects)."""
+        Penn Treebank formatted trees must be provided as well."""
         stream = iter(stream)
         corpus = this_class()
         for tree in trees:

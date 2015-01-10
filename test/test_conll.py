@@ -16,9 +16,8 @@ from test_stanforddependencies import (tree4, tree4_out_CCprocessed,
                                        tree5_out_collapsedTree_no_punc,
                                        stringify_sentence)
 
-def test_readwrite():
-    # example from http://ilk.uvt.nl/conll/example.html
-    sample_text = '''
+# example from http://ilk.uvt.nl/conll/example.html
+conll_example = '''
 1	Cathy	Cathy	N	N	eigen|ev|neut	2	su	_	_
 2	zag	zie	V	V	trans|ovt|1of2of3|ev	0	ROOT	_	_
 3	hen	hen	Pron	Pron	per|3|mv|datofacc	2	obj1	_	_
@@ -26,9 +25,86 @@ def test_readwrite():
 5	zwaaien	zwaai	N	N	soort|mv|neut	2	vc	_	_
 6	.	.	Punc	Punc	punt	5	punct	_	_
 '''
-    
-    corpus = Corpus.from_conll(sample_text.splitlines())
-    assert corpus.as_conll() == sample_text.strip()
+
+def test_conll_readwrite_sentence():
+    sentence = Sentence.from_conll(conll_example.splitlines())
+    assert sentence.as_conll() == conll_example.strip()
+
+def test_conll_readwrite_corpus():
+    corpus = Corpus.from_conll(conll_example.splitlines())
+    assert corpus.as_conll() == conll_example.strip()
+
+def test_conll_as_asciitree():
+    asciitree_out = '''
+ zag [ROOT]
+  +-- Cathy [su]
+  +-- hen [obj1]
+  +-- zwaaien [vc]
+     +-- wild [mod]
+     +-- . [punct]'''
+
+    sentence = Sentence.from_conll(conll_example.splitlines())
+    assert sentence.as_asciitree().strip() == asciitree_out.strip()
+
+def test_conll_as_asciitree_custom():
+    asciitree_out = '''
+ROOT:zag:V
+  +--su:Cathy:N
+  +--obj1:hen:Pron
+  +--vc:zwaaien:N
+     +--mod:wild:Adj
+     +--punct:.:Punc'''
+
+    def str_func(token):
+        return '%s:%s:%s' % (token.deprel, token.form, token.cpos)
+    sentence = Sentence.from_conll(conll_example.splitlines())
+    assert sentence.as_asciitree(str_func=str_func).strip() == \
+           asciitree_out.strip()
+
+def test_conll_as_asciitree_nontree():
+    sample_deps = '''
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+    '''.strip().splitlines()
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    assert len(sentence) == 6
+    assert sentence.as_asciitree().strip() == '''
+ burrito [root]
+  +-- A [det]
+  +-- beans [prep_with]
+  |  +-- chicken [conj_negcc]
+  +-- chicken [prep_with]
+  +-- . [punct]
+'''.strip()
+
+def test_conll_as_asciitree_nontree_erased():
+    sample_deps = '''
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+    '''.strip().splitlines()
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4,
+                                                   include_erased=True)
+    assert len(sentence) == 9
+    assert sentence.as_asciitree().strip() == '''
+ ROOT [ROOT-DEPREL]
+  +-- burrito [root]
+  |  +-- A [det]
+  |  +-- beans [prep_with]
+  |  |  +-- chicken [conj_negcc]
+  |  +-- chicken [prep_with]
+  |  +-- . [punct]
+  +-- with [erased]
+  +-- but [erased]
+  +-- not [erased]
+'''.strip()
 
 def test_read_sd_sentence():
     sample_deps = '''

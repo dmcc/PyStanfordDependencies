@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import subprocess
 import tempfile
 from .StanfordDependencies import (StanfordDependencies,
@@ -44,7 +45,8 @@ class SubprocessBackend(StanfordDependencies):
         Setting debug=True will cause debugging information (including
         the java command run to be printed."""
         self._raise_on_bad_representation(representation)
-        with tempfile.NamedTemporaryFile() as input_file:
+        input_file = tempfile.NamedTemporaryFile(delete=False)
+        try:
             for ptb_tree in ptb_trees:
                 input_file.write(ptb_tree + '\n')
             input_file.flush()
@@ -67,6 +69,8 @@ class SubprocessBackend(StanfordDependencies):
             stderr = sd_process.stderr.read()
             stdout = sd_process.stdout.read()
             self._raise_on_bad_exitcode(return_code, stderr, debug)
+        finally:
+            os.remove(input_file.name)
 
         sentences = Corpus.from_stanford_dependencies(stdout.splitlines(),
                                                       ptb_trees,

@@ -23,17 +23,20 @@ class JPypeBackend(StanfordDependencies):
     except that all string fields will be unicode. Additionally, has
     the option to run the lemmatizer (see convert_tree())."""
     def __init__(self, jar_filename=None, download_if_missing=False,
-                 version=None, extra_jvm_args=None, start_jpype=True):
+                 version=None, extra_jvm_args=None, start_jpype=True,
+                 jvm_path=None):
         """extra_jvm_args can be set to a list of strings which will
         be passed to your JVM.  If start_jpype is True, we will start
         a JVM via JPype if one hasn't been started already. The user is
         responsible for stopping the JVM (jpype.shutdownJVM()) when they
         are done converting. Once the JVM has been shutdown, you'll need
-        to create a new JPypeBackend in order to convert after that."""
+        to create a new JPypeBackend in order to convert after that.
+        jvm_path is the path to libjvm.so (if None, will use JPype's
+        default JRE path)."""
         StanfordDependencies.__init__(self, jar_filename, download_if_missing,
                                       version)
         if start_jpype and not jpype.isJVMStarted():
-            jpype.startJVM(jpype.getDefaultJVMPath(),
+            jpype.startJVM(jvm_path or jpype.getDefaultJVMPath(),
                            '-ea',
                            '-Djava.class.path=' + self.jar_filename,
                            *(extra_jvm_args or []))
@@ -49,8 +52,12 @@ class JPypeBackend(StanfordDependencies):
         self.treeReader = trees.Trees.readTree
         self.grammaticalStructure = trees.EnglishGrammaticalStructure
         self.stemmer = self.corenlp.process.Morphology.stemStaticSynchronized
-        self.puncFilter = trees.PennTreebankLanguagePack(). \
-            punctuationWordRejectFilter().accept
+        puncFilterInstance = trees.PennTreebankLanguagePack(). \
+            punctuationWordRejectFilter()
+        try:
+            self.puncFilter = puncFilterInstance.test
+        except AttributeError:
+            self.puncFilter = puncFilterInstance.accept
         self.lemma_cache = {}
     def convert_tree(self, ptb_tree, representation='basic',
                      include_punct=True, include_erased=False,

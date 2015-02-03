@@ -31,7 +31,7 @@ class SubprocessBackend(StanfordDependencies):
         StanfordDependencies.__init__(self, jar_filename, download_if_missing,
                                       version)
         self.java_command = java_command
-    def convert_trees(self, ptb_trees, java='java', representation='basic',
+    def convert_trees(self, ptb_trees, representation='basic',
                       include_punct=True, include_erased=False, debug=False):
         """Convert a list of Penn Treebank formatted trees (ptb_trees)
         into Stanford Dependencies. The dependencies are represented

@@ -96,7 +96,9 @@ class StanfordDependencies:
     @abstractmethod
     def convert_tree(self, ptb_tree, representation='basic', **kwargs):
         """Converts a single Penn Treebank format tree to Stanford
-        Dependencies. See convert_trees for more details."""
+        Dependencies. With some backends, this can be considerably
+        slower than using convert_trees, so consider that if you're
+        doing a batch conversion. See convert_trees for more details."""
 
     def setup_and_get_default_path(self, jar_base_filename):
         """Determine the user-specific install path for the Stanford

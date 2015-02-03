@@ -30,10 +30,11 @@ jar file, use the ``jar_filename`` parameter to point to the full path of
 the jar file. Otherwise, PyStanfordDependencies will download a jar file
 for you and store it in locally (``~/.local/share/pystanforddeps``). You
 can request a specific version with the ``version`` flag, e.g.,
-``version='3.4.1'``.  To convert trees, use the ``convert_tree()`` or
-``convert_trees()`` method.  These return a sentence (list of ``Token``
-objects) or a list of sentences (list of list of ``Token`` objects)
-respectively::
+``version='3.4.1'``.  To convert trees, use the ``convert_trees()`` or
+``convert_tree()`` method (note that by default, ``convert_trees()`` can
+be considerably faster if you're doing batch conversion).  These return
+a sentence (list of ``Token`` objects) or a list of sentences (list of
+list of ``Token`` objects) respectively::
 
     >>> sent = sd.convert_tree('(S1 (NP (DT some) (JJ blue) (NN moose)))')
     >>> for token in sent:

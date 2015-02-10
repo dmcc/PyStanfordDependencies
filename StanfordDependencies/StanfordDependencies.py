@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 import urllib
 
 # ideally, this will be set to the latest version of CoreNLP
-DEFAULT_CORENLP_VERSION = '3.5.0'
+DEFAULT_CORENLP_VERSION = '3.5.1'
 
 # where we store downloaded jar files
 INSTALL_DIR = '~/.local/share/pystanforddeps'

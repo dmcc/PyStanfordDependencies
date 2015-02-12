@@ -17,8 +17,7 @@ from test_stanforddependencies import (tree4, tree4_out_CCprocessed,
                                        tree5_out_collapsedTree_no_punc,
                                        stringify_sentence)
 
-version_info = (sys.version_info.major, sys.version_info.minor)
-older_than_py27 = version_info < (2, 7)
+older_than_py27 = sys.version_info[:2] < (2, 7)
 
 # example from http://ilk.uvt.nl/conll/example.html
 conll_example = '''

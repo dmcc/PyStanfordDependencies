@@ -10,11 +10,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 from StanfordDependencies.CoNLL import Corpus, Sentence
 from test_stanforddependencies import (tree4, tree4_out_CCprocessed,
                                        tree5, tree5_out_CCprocessed,
                                        tree5_out_collapsedTree_no_punc,
                                        stringify_sentence)
+
+version_info = (sys.version_info.major, sys.version_info.minor)
+older_than_py27 = version_info < (2, 7)
 
 # example from http://ilk.uvt.nl/conll/example.html
 conll_example = '''
@@ -107,6 +111,8 @@ punct(burrito-2, .-8)
 '''.strip()
 
 def test_conll_as_dotgraph_nontree():
+    if older_than_py27: # this feature disabled in older Pythons
+        return
     sample_deps = '''
 det(burrito-2, A-1)
 root(ROOT-0, burrito-2)
@@ -135,6 +141,8 @@ digraph {
 '''.strip()
 
 def test_conll_as_dotgraph_custom_digraph_and_idprefix():
+    if older_than_py27: # this feature disabled in older Pythons
+        return
     formatted_dotgraph = '''
 digraph test {
 	x0 [label=root]
@@ -157,6 +165,8 @@ digraph test {
                                     digraph_kwargs={'name': 'test'})
 
 def test_conll_as_dotgraph_custom_nodeformat():
+    if older_than_py27: # this feature disabled in older Pythons
+        return
     formatted_dotgraph = '''
 digraph {
 	0 [label=root color=red]
@@ -189,6 +199,8 @@ digraph {
     assert dotgraph.source == formatted_dotgraph
 
 def test_conll_as_dotgraph_custom_edgeformat():
+    if older_than_py27: # this feature disabled in older Pythons
+        return
     formatted_dotgraph = '''
 digraph {
 	0 [label=root]

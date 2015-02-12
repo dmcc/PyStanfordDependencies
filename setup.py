@@ -3,8 +3,9 @@
 from distutils.core import setup
 
 setup(name='PyStanfordDependencies',
-      version='0.1.5',
-      description='Python interface for converting Penn Treebank trees to Stanford Dependencies',
+      version='0.1.6',
+      description='Python interface for converting Penn Treebank trees to '
+                  'Stanford Dependencies',
       long_description=file('README.rst').read(),
       author='David McClosky',
       author_email='notsoweird+pystanforddependencies@gmail.com',

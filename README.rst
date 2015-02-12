@@ -23,16 +23,16 @@ Start by getting a ``StanfordDependencies`` instance with
     >>> sd = StanfordDependencies.get_instance(backend='subprocess')
 
 ``get_instance()`` takes several options. ``backend`` can currently
-be ``subprocess`` or ``jpype`` (see below).  If you have an existing
+be ``subprocess`` or ``jpype`` (see below). If you have an existing
 `Stanford CoreNLP <http://nlp.stanford.edu/software/corenlp.shtml>`_ or
 `Stanford Parser <http://nlp.stanford.edu/software/lex-parser.shtml>`_
 jar file, use the ``jar_filename`` parameter to point to the full path of
 the jar file. Otherwise, PyStanfordDependencies will download a jar file
 for you and store it in locally (``~/.local/share/pystanforddeps``). You
 can request a specific version with the ``version`` flag, e.g.,
-``version='3.4.1'``.  To convert trees, use the ``convert_trees()`` or
+``version='3.4.1'``. To convert trees, use the ``convert_trees()`` or
 ``convert_tree()`` method (note that by default, ``convert_trees()`` can
-be considerably faster if you're doing batch conversion).  These return
+be considerably faster if you're doing batch conversion). These return
 a sentence (list of ``Token`` objects) or a list of sentences (list of
 list of ``Token`` objects) respectively::
 
@@ -50,13 +50,48 @@ modified by ``some`` (with a ``det`` = determiner relation) and ``blue``
 objects are readable as attributes. See docs for additional options in
 ``convert_tree()`` and ``convert_trees()``.
 
+Visualization
+-------------
+
 If you have the `asciitree <https://pypi.python.org/pypi/asciitree>`_
-package, you can use a prettier formatter::
+package, you can use a prettier ASCII formatter::
 
     >>> print sent.as_asciitree()
      moose [root]
       +-- some [det]
       +-- blue [amod]
+
+If you have Python 2.7 or later, you can use `Graphviz
+<http://graphviz.org/>`_ to render your graphs. You'll need the `Python
+graphviz <https://pypi.python.org/pypi/graphviz>`_ package to call
+``as_dotgraph()``::
+
+    >>> dotgraph = sent.as_dotgraph()
+    >>> print dotgraph
+    digraph {
+            0 [label=root]
+            1 [label=some]
+                    3 -> 1 [label=det]
+            2 [label=blue]
+                    3 -> 2 [label=amod]
+            3 [label=moose]
+                    0 -> 3 [label=root]
+    }
+    >>> dotgraph.render('moose') # renders a PDF by default
+    'moose.pdf'
+    >>> dotgraph.format = 'svg'
+    >>> dotgraph.render('moose')
+    'moose.svg'
+
+The Python `xdot <https://pypi.python.org/pypi/xdot>`_
+package provides an interactive visualization::
+
+    >>> import xdot
+    >>> window = xdot.DotWindow()
+    >>> window.set_dotcode(dotgraph.source)
+
+Both ``as_asciitree()`` and ``as_dotgraph()`` allow customization.
+See the docs for additional options.
 
 Backends
 --------
@@ -69,8 +104,8 @@ Currently PyStanfordDependencies includes two backends:
   lemmatizer)
 
 By default, PyStanfordDependencies will attempt to use the ``jpype``
-backend and fallback to ``subprocess`` with a warning if ``jpype``
-isn't available or crashes on startup.
+backend. If ``jpype`` isn't available or crashes on startup,
+PyStanfordDependencies will fallback to ``subprocess`` with a warning.
 
 More information
 ----------------
@@ -84,6 +119,8 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
+- 0.1.6 (2015.02.12): Support for graphviz formatting, CoreNLP 3.5.1,
+  better Windows portability
 - 0.1.5 (2015.01.10): Support for ASCII tree formatting
 - 0.1.4 (2015.01.07): Fix CCprocessed support
 - 0.1.3 (2015.01.03): Bugfixes, coveralls integration, refactoring

@@ -110,6 +110,42 @@ class Sentence(list):
                 return ' %s [%s]' % (token.form, token.deprel)
 
         return asciitree.draw_tree(root, child_func, str_func)
+    def as_dotgraph(self, digraph_kwargs=None, id_prefix=None,
+                    node_formatter=None, edge_formatter=None):
+        """Returns this sentence as a graphviz.Digraph. Requires the
+        graphviz Python package and graphviz itself. There are several
+        ways to customize. Graph level keyword arguments can be passed
+        as a dictionary to digraph_kwargs. If you're viewing multiple
+        Sentences in the same graph, you'll need to set a unique prefix
+        string in id_prefix. Lastly, you can change the formatting of
+        nodes and edges with node_formatter and edge_formatter. Both
+        take a single Token as an argument (for edge_formatter, the
+        Token represents the child token) and return a dictionary of
+        keyword arguments which are passed to the node and edge creation
+        functions in graphviz. The node_formatter will also be called
+        with None as its token when adding the root."""
+        digraph_kwargs = digraph_kwargs or {}
+        id_prefix = id_prefix or ''
+
+        node_formatter = node_formatter or (lambda token: {})
+        edge_formatter = edge_formatter or (lambda token: {})
+
+        import graphviz
+        graph = graphviz.Digraph(**digraph_kwargs)
+        # add root node
+        graph.node(id_prefix + '0', 'root', **node_formatter(None))
+
+        # add remaining nodes and edges
+        already_added = set()
+        for token in self:
+            token_id = id_prefix + str(token.index)
+            parent_id = id_prefix + str(token.head)
+            if token_id not in already_added:
+                graph.node(token_id, token.form, **node_formatter(token))
+            graph.edge(parent_id, token_id, label=token.deprel,
+                       **edge_formatter(token))
+            already_added.add(token_id)
+        return graph
 
     @classmethod
     def from_conll(this_class, stream):

@@ -106,6 +106,116 @@ punct(burrito-2, .-8)
   +-- not [erased]
 '''.strip()
 
+def test_conll_as_dotgraph_nontree():
+    sample_deps = '''
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+    '''.strip().splitlines()
+    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    assert len(sentence) == 6
+    assert sentence.as_dotgraph().source == '''
+digraph {
+	0 [label=root]
+	1 [label=A]
+		2 -> 1 [label=det]
+	2 [label=burrito]
+		0 -> 2 [label=root]
+	4 [label=beans]
+		2 -> 4 [label=prep_with]
+	7 [label=chicken]
+		2 -> 7 [label=prep_with]
+		4 -> 7 [label=conj_negcc]
+	8 [label="."]
+		2 -> 8 [label=punct]
+}
+'''.strip()
+
+def test_conll_as_dotgraph_custom_digraph_and_idprefix():
+    formatted_dotgraph = '''
+digraph test {
+	x0 [label=root]
+	x1 [label=Cathy]
+		x2 -> x1 [label=su]
+	x2 [label=zag]
+		x0 -> x2 [label=ROOT]
+	x3 [label=hen]
+		x2 -> x3 [label=obj1]
+	x4 [label=wild]
+		x5 -> x4 [label=mod]
+	x5 [label=zwaaien]
+		x2 -> x5 [label=vc]
+	x6 [label="."]
+		x5 -> x6 [label=punct]
+}'''.strip()
+
+    sentence = Sentence.from_conll(conll_example.splitlines())
+    dotgraph = sentence.as_dotgraph(id_prefix='x',
+                                    digraph_kwargs={'name': 'test'})
+
+def test_conll_as_dotgraph_custom_nodeformat():
+    formatted_dotgraph = '''
+digraph {
+	0 [label=root color=red]
+	1 [label=Cathy color=green]
+		2 -> 1 [label=su]
+	2 [label=zag color=blue]
+		0 -> 2 [label=ROOT]
+	3 [label=hen]
+		2 -> 3 [label=obj1]
+	4 [label=wild]
+		5 -> 4 [label=mod]
+	5 [label=zwaaien color=green]
+		2 -> 5 [label=vc]
+	6 [label="."]
+		5 -> 6 [label=punct]
+}
+'''.strip()
+
+    def node_formatter(token):
+        if token is None:
+            return {'color': 'red'}
+        elif token.cpos == 'N':
+            return {'color': 'green'}
+        elif token.cpos == 'V':
+            return {'color': 'blue'}
+        else:
+            return {}
+    sentence = Sentence.from_conll(conll_example.splitlines())
+    dotgraph = sentence.as_dotgraph(node_formatter=node_formatter)
+    assert dotgraph.source == formatted_dotgraph
+
+def test_conll_as_dotgraph_custom_edgeformat():
+    formatted_dotgraph = '''
+digraph {
+	0 [label=root]
+	1 [label=Cathy]
+		2 -> 1 [label=su color=blue]
+	2 [label=zag]
+		0 -> 2 [label=ROOT color=red]
+	3 [label=hen]
+		2 -> 3 [label=obj1 color=blue]
+	4 [label=wild]
+		5 -> 4 [label=mod color=blue]
+	5 [label=zwaaien]
+		2 -> 5 [label=vc color=blue]
+	6 [label="."]
+		5 -> 6 [label=punct color=blue]
+}
+'''.strip()
+
+    sentence = Sentence.from_conll(conll_example.splitlines())
+    def edge_formatter(token):
+        if token.head == 0:
+            return {'color': 'red'}
+        else:
+            return {'color': 'blue'}
+    dotgraph = sentence.as_dotgraph(edge_formatter=edge_formatter)
+    assert dotgraph.source == formatted_dotgraph
+
 def test_read_sd_sentence():
     sample_deps = '''
 det(burrito-2, A-1)

@@ -69,7 +69,8 @@ class JPypeBackend(StanfordDependencies):
         tree = self.treeReader(ptb_tree)
         deps = self._get_deps(tree, include_punct, representation)
 
-        indices_to_words = dict(enumerate(tree.taggedYield(), 1))
+        tagged_yield = self._listify(tree.taggedYield())
+        indices_to_words = dict(enumerate(tagged_yield, 1))
         tokens = Sentence()
         covered_indices = set()
 
@@ -133,7 +134,16 @@ class JPypeBackend(StanfordDependencies):
             # assertion doesn't fail
             assert representation == 'collapsedTree'
             deps = egs.typedDependenciesCollapsedTree()
-        return deps
+        return self._listify(deps)
+
+    @staticmethod
+    def _listify(collection):
+        """This is a workaround where Collections are no longer iterable
+        when using JPype."""
+        new_list = []
+        for index in range(len(collection)):
+            new_list.append(collection[index])
+        return new_list
 
     @staticmethod
     def _report_version_error(version):

@@ -95,6 +95,10 @@ class SubprocessBackend(StanfordDependencies):
 
         if return_code:
             if 'Unsupported major.minor version' in stderr:
+                # Oracle Java error message
+                raise JavaRuntimeVersionError()
+            elif 'JVMCFRE003 bad major version' in stderr:
+                # IBM Java error message
                 raise JavaRuntimeVersionError()
             else:
                 raise ValueError("Bad exit code from Stanford CoreNLP")

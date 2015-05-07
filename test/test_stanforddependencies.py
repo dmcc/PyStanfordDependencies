@@ -345,6 +345,13 @@ class SubprocessBackendTest(DefaultBackendTest):
                           self.sd._raise_on_bad_exitcode, -7,
                           'Unsupported major.minor version',
                           debug=True)
+        self.assertRaises(JavaRuntimeVersionError,
+                          self.sd._raise_on_bad_exitcode, 1,
+                          'JVMCFRE003 bad major version')
+        self.assertRaises(JavaRuntimeVersionError,
+                          self.sd._raise_on_bad_exitcode, -7,
+                          'JVMCFRE003 bad major version',
+                          debug=True)
         self.sd._raise_on_bad_exitcode(0, '') # shouldn't raise anything
 
     def test_convert_debug(self):

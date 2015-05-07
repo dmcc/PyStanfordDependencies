@@ -12,6 +12,7 @@
 
 from abc import ABCMeta, abstractmethod
 import urllib
+import warnings
 
 # ideally, this will be set to the latest version of CoreNLP
 DEFAULT_CORENLP_VERSION = '3.5.1'
@@ -192,14 +193,16 @@ class StanfordDependencies:
                 from JPypeBackend import JPypeBackend
                 return JPypeBackend(**extra_args)
             except ImportError:
-                import warnings
                 warnings.warn('Error importing JPypeBackend, ' +
                               'falling back to SubprocessBackend.')
                 backend = 'subprocess'
             except RuntimeError, r:
-                import warnings
                 warnings.warn('RuntimeError with JPypeBackend (%s), '
                               'falling back to SubprocessBackend.' % r[0])
+                backend = 'subprocess'
+            except TypeError, t:
+                warnings.warn('TypeError with JPypeBackend (%s), '
+                              'falling back to SubprocessBackend.' % t[0])
                 backend = 'subprocess'
 
         if backend == 'subprocess':

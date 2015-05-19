@@ -49,7 +49,7 @@ class Token(namedtuple('Token', FIELD_NAMES)):
         fields = ['%s=%r' % (k, v) for k, v in items if v is not None]
         return '%s(%s)' % (self.__class__.__name__, ', '.join(fields))
     def as_conll(self):
-        """Represent this Token as a line in CoNLL-X format."""
+        """Represent this Token as a line as a string in CoNLL-X format."""
         def get(field):
             value = getattr(self, field)
             if value is None:
@@ -72,7 +72,7 @@ class Token(namedtuple('Token', FIELD_NAMES)):
 class Sentence(list):
     """Sequence of Token objects."""
     def as_conll(self):
-        """Represent this Sentence in CoNLL-X format."""
+        """Represent this Sentence as a string in CoNLL-X format."""
         return '\n'.join(token.as_conll() for token in self)
     def as_asciitree(self, str_func=None):
         """Represent this Sentence as an ASCII tree string. Requires
@@ -213,7 +213,7 @@ class Sentence(list):
 class Corpus(list):
     """Sequence of Sentence objects."""
     def as_conll(self):
-        """Represent the entire corpus in CoNLL-X format."""
+        """Represent the entire corpus as a string in CoNLL-X format."""
         return '\n'.join(sentence.as_conll() for sentence in self)
     @classmethod
     def from_conll(this_class, stream):

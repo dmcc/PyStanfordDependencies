@@ -21,8 +21,8 @@ JAVA_CLASS_NAME = 'edu.stanford.nlp.trees.EnglishGrammaticalStructure'
 
 class SubprocessBackend(StanfordDependencies):
     """Interface to Stanford Dependencies via subprocesses. This means
-    that each call opens a pipe to Java. It has the advantage that
-    it should work out of the box if you have Java but is slower than
+    that each call opens a pipe to Java. It has the advantage that it
+    should work out of the box if you have Java but it is slower than
     other backends. As such, convert_trees() will be more efficient than
     convert_tree() for this backend."""
     def __init__(self, jar_filename=None, download_if_missing=False,

@@ -124,6 +124,7 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
+- 0.1.7 (2015.06.13): Bugfixes for JPype, support for IBM Java
 - 0.1.6 (2015.02.12): Support for graphviz formatting, CoreNLP 3.5.1,
   better Windows portability
 - 0.1.5 (2015.01.10): Support for ASCII tree formatting
@@ -143,5 +144,5 @@ __all__ = (StanfordDependencies, get_instance, JavaRuntimeVersionError,
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 __email__ = 'notsoweird+pystanforddependencies@gmail.com'

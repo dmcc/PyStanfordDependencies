@@ -15,7 +15,7 @@ import urllib
 import warnings
 
 # ideally, this will be set to the latest version of CoreNLP
-DEFAULT_CORENLP_VERSION = '3.5.1'
+DEFAULT_CORENLP_VERSION = '3.5.2'
 
 # where we store downloaded jar files
 INSTALL_DIR = '~/.local/share/pystanforddeps'

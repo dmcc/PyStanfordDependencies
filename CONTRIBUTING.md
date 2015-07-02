@@ -18,8 +18,8 @@ If you're looking for ideas, see [issues][issues], specifically those marked [`h
 
 * Make your changes.
 
-* Test your changes with `flake8 StanfordDependencies` and `nosetests` (more information in the [release checklist][checklist]. 
-  If you add new code, please add appropriate testing code as well. See [coveralls][coveralls] for current
+* Test your changes with `flake8 StanfordDependencies` and `nosetests` (you will need the `flake8` and `nose` packages. More information is available in the [release checklist][checklist]). 
+  If you add new code, please add appropriate testing code as well in `tests/`. See [coveralls][coveralls] for current
   test coverage.
 
 * Push to your fork and [submit a pull request][pr].

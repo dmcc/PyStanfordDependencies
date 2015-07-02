@@ -1,8 +1,9 @@
 Release checklist
 -----------------
 0a. Ensure latest version of Stanford CoreNLP is set properly
-0b. shell> flake8 StanfordDependencies
-0c. Ensure tests are passing
+0b. shell> python setup.py build
+0c. shell> flake8 StanfordDependencies
+0d. Ensure tests are passing: shell> nosetests -dvx
 1.  Version bumps in StanfordDependencies/__init__.py and setup.py
 2.  Update release history in README.rst
 3.  Sync README.rst content with StanfordDependencies/__init__.py

@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import unittest
 from StanfordDependencies import (StanfordDependencies, get_instance,
                                   JavaRuntimeVersionError)
@@ -231,14 +232,18 @@ def test_jpype_backend_creation():
 
 def stringify_sentence(tokens):
     from StanfordDependencies import CoNLL
-    # this doesn't work in general, but for current tests we want all
-    # the string fields to be strings, not unicode
     new_tokens = []
+
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+
     for token in tokens:
         new_fields = []
         for field in CoNLL.FIELD_NAMES:
             value = getattr(token, field)
-            if isinstance(value, basestring):
+            if isinstance(value, string_type):
                 value = str(value)
             new_fields.append(value)
         new_tokens.append(CoNLL.Token(*new_fields))
@@ -311,21 +316,21 @@ class DefaultBackendTest(unittest.TestCase):
         self.assertRaises(TypeError, self.sd.get_jar_url, (3, 5, 0))
 
     def assertConverts(self, tree, expected, **conversion_options):
-        print 'tree:'
-        print tree
-        print 'conversion_options:'
-        print conversion_options
+        print('tree:')
+        print(tree)
+        print('conversion_options:')
+        print(conversion_options)
         tokens = self.sd.convert_tree(tree, **conversion_options)
         self.assertTokensMatch(tokens, expected)
     def assertTokensMatch(self, tokens, expected_stringification):
         stringified = stringify_sentence(tokens)
-        print 'actual stringified:'
-        print stringified
-        print 'expected stringified:'
-        print expected_stringification
-        print 'matches:', stringified == expected_stringification
+        print('actual stringified:')
+        print(stringified)
+        print('expected stringified:')
+        print(expected_stringification)
+        print('matches:', stringified == expected_stringification)
         assert stringified == expected_stringification
-        print
+        print()
 
 class SubprocessBackendTest(DefaultBackendTest):
     backend = 'subprocess'

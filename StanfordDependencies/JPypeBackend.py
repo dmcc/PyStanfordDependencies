@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import jpype
 from .StanfordDependencies import (StanfordDependencies,
                                    JavaRuntimeVersionError)
@@ -147,10 +148,10 @@ class JPypeBackend(StanfordDependencies):
 
     @staticmethod
     def _report_version_error(version):
-        print "Your Java version:", version
+        print("Your Java version:", version)
         if version.split('.')[:2] < ['1', '8']:
-            print "The last CoreNLP release for Java 1.6/1.7 was 3.4.1"
-            print "Try using: StanfordDependencies.get_instance(" \
-                  "backend='jpype', version='3.4.1')"
-            print
+            print("The last CoreNLP release for Java 1.6/1.7 was 3.4.1")
+            print("Try using: StanfordDependencies.get_instance("
+                  "backend='jpype', version='3.4.1')")
+            print()
         raise JavaRuntimeVersionError()

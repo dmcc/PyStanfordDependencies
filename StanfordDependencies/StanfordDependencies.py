@@ -10,8 +10,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 from abc import ABCMeta, abstractmethod
-import urllib
+
+try:
+    from urllib import FancyURLopener
+except ImportError:
+    from urllib.request import FancyURLopener
+
 import warnings
 
 # ideally, this will be set to the latest version of CoreNLP
@@ -32,7 +38,7 @@ class JavaRuntimeVersionError(EnvironmentError):
                   "version 1.3.1 or later)"
         super(JavaRuntimeVersionError, self).__init__(message)
 
-class ErrorAwareURLOpener(urllib.FancyURLopener):
+class ErrorAwareURLOpener(FancyURLopener):
     def http_error_default(self, url, fp, errcode, errmsg, headers):
         raise ValueError("Error downloading %r: %s %s" %
                          (url, errcode, errmsg))
@@ -127,7 +133,7 @@ class StanfordDependencies:
 
         jar_url = self.get_jar_url(version)
         if verbose:
-            print "Downloading %r -> %r" % (jar_url, self.jar_filename)
+            print("Downloading %r -> %r" % (jar_url, self.jar_filename))
         opener = ErrorAwareURLOpener()
         opener.retrieve(jar_url, filename=self.jar_filename)
 
@@ -149,7 +155,13 @@ class StanfordDependencies:
         DEFAULT_CORENLP_VERSION."""
         if version is None:
             version = DEFAULT_CORENLP_VERSION
-        if not isinstance(version, basestring):
+
+        try:
+            string_type = basestring
+        except NameError:
+            string_type = str
+
+        if not isinstance(version, string_type):
             raise TypeError("Version must be a string or None (got %r)." %
                             version)
         jar_filename = 'stanford-corenlp-%s.jar' % version
@@ -190,23 +202,23 @@ class StanfordDependencies:
                           version=version)
         if backend == 'jpype':
             try:
-                from JPypeBackend import JPypeBackend
+                from .JPypeBackend import JPypeBackend
                 return JPypeBackend(**extra_args)
             except ImportError:
                 warnings.warn('Error importing JPypeBackend, ' +
                               'falling back to SubprocessBackend.')
                 backend = 'subprocess'
-            except RuntimeError, r:
+            except RuntimeError as r:
                 warnings.warn('RuntimeError with JPypeBackend (%s), '
                               'falling back to SubprocessBackend.' % r[0])
                 backend = 'subprocess'
-            except TypeError, t:
+            except TypeError as t:
                 warnings.warn('TypeError with JPypeBackend (%s), '
                               'falling back to SubprocessBackend.' % t[0])
                 backend = 'subprocess'
 
         if backend == 'subprocess':
-            from SubprocessBackend import SubprocessBackend
+            from .SubprocessBackend import SubprocessBackend
             return SubprocessBackend(**extra_args)
 
         raise ValueError("Unknown backend: %r (known backends: "

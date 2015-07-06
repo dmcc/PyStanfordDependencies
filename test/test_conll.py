@@ -12,7 +12,7 @@
 
 import sys
 from StanfordDependencies.CoNLL import Corpus, Sentence
-from test_stanforddependencies import (tree4, tree4_out_CCprocessed,
+from test.test_stanforddependencies import (tree4, tree4_out_CCprocessed,
                                        tree5, tree5_out_CCprocessed,
                                        tree5_out_collapsedTree_no_punc,
                                        stringify_sentence)

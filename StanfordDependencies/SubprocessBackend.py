@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
 import os
 import subprocess
 import tempfile
@@ -48,7 +49,8 @@ class SubprocessBackend(StanfordDependencies):
         input_file = tempfile.NamedTemporaryFile(delete=False)
         try:
             for ptb_tree in ptb_trees:
-                input_file.write(ptb_tree + '\n')
+                tree_with_line_break = ptb_tree + "\n"
+                input_file.write(tree_with_line_break.encode("utf-8"))
             input_file.flush()
 
             command = [self.java_command,
@@ -62,9 +64,10 @@ class SubprocessBackend(StanfordDependencies):
             if include_punct or include_erased:
                 command.append('-keepPunct')
             if debug:
-                print 'Command:', ' '.join(command)
+                print('Command:', ' '.join(command))
             sd_process = subprocess.Popen(command, stdout=subprocess.PIPE,
-                                          stderr=subprocess.PIPE)
+                                          stderr=subprocess.PIPE,
+                                          universal_newlines=True)
             return_code = sd_process.wait()
             stderr = sd_process.stderr.read()
             stdout = sd_process.stdout.read()
@@ -89,9 +92,9 @@ class SubprocessBackend(StanfordDependencies):
     @staticmethod
     def _raise_on_bad_exitcode(return_code, stderr, debug=False):
         if debug:
-            print 'Exit code:', return_code
+            print('Exit code:', return_code)
             if stderr.strip():
-                print 'stderr:', stderr
+                print('stderr:', stderr)
 
         if return_code:
             if 'Unsupported major.minor version' in stderr:

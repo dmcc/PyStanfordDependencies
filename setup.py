@@ -6,7 +6,7 @@ setup(name='PyStanfordDependencies',
       version='0.1.7',
       description='Python interface for converting Penn Treebank trees to '
                   'Stanford Dependencies',
-      long_description=file('README.rst').read(),
+      long_description=open('README.rst').read(),
       author='David McClosky',
       author_email='notsoweird+pystanforddependencies@gmail.com',
       classifiers=[

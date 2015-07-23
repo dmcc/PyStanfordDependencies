@@ -35,4 +35,4 @@ Submitting changes
 -  Push to your fork. `Travis
    CI <https://travis-ci.org/dmcc/PyStanfordDependencies/>`__ will test
    your changes on various Python versions. If the tests pass, `submit a
-   pull request <https://github.com/dmcc/PyStanfordDepdendencies/compare/>`__.
+   pull request <https://github.com/dmcc/PyStanfordDependencies/compare/>`__.

@@ -12,10 +12,8 @@
 
 import sys
 from StanfordDependencies.CoNLL import Corpus, Sentence
-from test.test_stanforddependencies import (tree4, tree4_out_CCprocessed,
-                                       tree5, tree5_out_CCprocessed,
-                                       tree5_out_collapsedTree_no_punc,
-                                       stringify_sentence)
+from .data import trees_sd
+from .test_stanforddependencies import stringify_sentence
 
 older_than_py27 = sys.version_info[:2] < (2, 7)
 
@@ -73,7 +71,7 @@ prep_with(burrito-2, chicken-7)
 conj_negcc(beans-4, chicken-7)
 punct(burrito-2, .-8)
     '''.strip().splitlines()
-    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    sentence = Sentence.from_stanford_dependencies(sample_deps, trees_sd.tree4)
     assert len(sentence) == 6
     assert sentence.as_asciitree().strip() == '''
  burrito [root]
@@ -93,7 +91,7 @@ prep_with(burrito-2, chicken-7)
 conj_negcc(beans-4, chicken-7)
 punct(burrito-2, .-8)
     '''.strip().splitlines()
-    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4,
+    sentence = Sentence.from_stanford_dependencies(sample_deps, trees_sd.tree4,
                                                    include_erased=True)
     assert len(sentence) == 9
     assert sentence.as_asciitree().strip() == '''
@@ -120,7 +118,7 @@ prep_with(burrito-2, chicken-7)
 conj_negcc(beans-4, chicken-7)
 punct(burrito-2, .-8)
     '''.strip().splitlines()
-    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
+    sentence = Sentence.from_stanford_dependencies(sample_deps, trees_sd.tree4)
     assert len(sentence) == 6
     assert sentence.as_dotgraph().source == '''
 digraph {
@@ -236,8 +234,8 @@ prep_with(burrito-2, chicken-7)
 conj_negcc(beans-4, chicken-7)
 punct(burrito-2, .-8)
     '''.strip().splitlines()
-    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
-    assert stringify_sentence(sentence) == tree4_out_CCprocessed
+    sentence = Sentence.from_stanford_dependencies(sample_deps, trees_sd.tree4)
+    assert stringify_sentence(sentence) == trees_sd.tree4_out_CCprocessed
 
 def test_read_sd_sentence_extra_space():
     sample_deps = '''
@@ -251,8 +249,8 @@ punct(burrito-2, .-8)
 
 
     '''.splitlines()
-    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
-    assert stringify_sentence(sentence) == tree4_out_CCprocessed
+    sentence = Sentence.from_stanford_dependencies(sample_deps, trees_sd.tree4)
+    assert stringify_sentence(sentence) == trees_sd.tree4_out_CCprocessed
 
 def test_read_sd_sentence_punct():
     sample_deps = '''
@@ -329,8 +327,8 @@ prep_with(burrito-2, beans-4)
 root(ROOT-0, burrito-2)
 det(burrito-2, A-1)
     '''.strip().splitlines()
-    sentence = Sentence.from_stanford_dependencies(sample_deps, tree4)
-    assert stringify_sentence(sentence) == tree4_out_CCprocessed
+    sentence = Sentence.from_stanford_dependencies(sample_deps, trees_sd.tree4)
+    assert stringify_sentence(sentence) == trees_sd.tree4_out_CCprocessed
 
 def test_read_sd_corpus_single():
     sample_deps = '''
@@ -341,9 +339,9 @@ prep_with(burrito-2, chicken-7)
 conj_negcc(beans-4, chicken-7)
 punct(burrito-2, .-8)
     '''.strip().splitlines()
-    corpus = Corpus.from_stanford_dependencies(sample_deps, [tree4])
+    corpus = Corpus.from_stanford_dependencies(sample_deps, [trees_sd.tree4])
     assert len(corpus) == 1
-    assert stringify_sentence(corpus[0]) == tree4_out_CCprocessed
+    assert stringify_sentence(corpus[0]) == trees_sd.tree4_out_CCprocessed
 
 def test_read_sd_corpus_multiple():
     sample_deps = '''
@@ -364,7 +362,8 @@ prep_with(burritos-5, rice-10)
 conj_negcc(beans-7, rice-10)
 punct(cooks-2, .-11)
     '''.strip().splitlines()
-    corpus = Corpus.from_stanford_dependencies(sample_deps, [tree4, tree5])
+    corpus = Corpus.from_stanford_dependencies(sample_deps, [trees_sd.tree4,
+                                                             trees_sd.tree5])
     assert len(corpus) == 2
-    assert stringify_sentence(corpus[0]) == tree4_out_CCprocessed
-    assert stringify_sentence(corpus[1]) == tree5_out_CCprocessed
+    assert stringify_sentence(corpus[0]) == trees_sd.tree4_out_CCprocessed
+    assert stringify_sentence(corpus[1]) == trees_sd.tree5_out_CCprocessed

@@ -51,7 +51,23 @@ class JPypeBackend(StanfordDependencies):
             self._report_version_error(version)
         trees = self.corenlp.trees
         self.treeReader = trees.Trees.readTree
-        self.grammaticalStructure = trees.EnglishGrammaticalStructure
+
+        self.converter = trees.EnglishGrammaticalStructure
+        self.universal_converter = trees.UniversalEnglishGrammaticalStructure
+        # we now need to test whether we can actually create a universal
+        # converter -- we'll call it with invalid number of arguments
+        # since we don't want create a tree just for this
+        try:
+            self.universal_converter()
+        except TypeError:
+            # this is JPype's way of saying that it doesn't exist so we
+            # fall back to the original converter
+            self.universal_converter = self.converter
+        except RuntimeError as re:
+            # this means it exists but wanted a different number of arguments
+            # (in other words, we have a universal converter)
+            assert "No matching overloads found" in str(re)
+
         self.stemmer = self.corenlp.process.Morphology.stemStaticSynchronized
         puncFilterInstance = trees.PennTreebankLanguagePack(). \
             punctuationWordRejectFilter()
@@ -62,13 +78,14 @@ class JPypeBackend(StanfordDependencies):
         self.lemma_cache = {}
     def convert_tree(self, ptb_tree, representation='basic',
                      include_punct=True, include_erased=False,
-                     add_lemmas=False):
+                     add_lemmas=False, universal=True):
         """Arguments are as in StanfordDependencies.convert_trees but with
         the addition of add_lemmas. If add_lemmas=True, we will run the
         Stanford CoreNLP lemmatizer and fill in the lemma field."""
         self._raise_on_bad_representation(representation)
         tree = self.treeReader(ptb_tree)
-        deps = self._get_deps(tree, include_punct, representation)
+        deps = self._get_deps(tree, include_punct, representation,
+                              universal=universal)
 
         tagged_yield = self._listify(tree.taggedYield())
         indices_to_words = dict(enumerate(tagged_yield, 1))
@@ -116,13 +133,24 @@ class JPypeBackend(StanfordDependencies):
             self.lemma_cache[key] = lemma
         return self.lemma_cache[key]
 
-    def _get_deps(self, tree, include_punct, representation):
-        """Get a list of dependencies from a Stanford Treee for a specific
+    def _get_deps(self, tree, include_punct, representation, universal):
+        """Get a list of dependencies from a Stanford Tree for a specific
         Stanford Dependencies representation."""
-        if include_punct:
-            egs = self.grammaticalStructure(tree, self.acceptFilter)
+        if universal:
+            converter = self.universal_converter
+
+            if self.universal_converter == self.converter:
+                import warnings
+                warnings.warn("This jar doesn't support universal dependencies, "
+                              "falling back to Stanford Dependencies. To suppress this "
+                              "message, call with universal=False")
         else:
-            egs = self.grammaticalStructure(tree)
+            converter = self.converter
+
+        if include_punct:
+            egs = converter(tree, self.acceptFilter)
+        else:
+            egs = converter(tree)
 
         if representation == 'basic':
             deps = egs.typedDependencies()

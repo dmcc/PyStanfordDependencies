@@ -33,7 +33,8 @@ class SubprocessBackend(StanfordDependencies):
                                       version)
         self.java_command = java_command
     def convert_trees(self, ptb_trees, representation='basic',
-                      include_punct=True, include_erased=False, debug=False):
+                      include_punct=True, include_erased=False, universal=True,
+                      debug=False):
         """Convert a list of Penn Treebank formatted trees (ptb_trees)
         into Stanford Dependencies. The dependencies are represented
         as a list of sentences, where each sentence is itself a list of
@@ -41,7 +42,8 @@ class SubprocessBackend(StanfordDependencies):
 
         Currently supported representations are 'basic', 'collapsed',
         'CCprocessed', and 'collapsedTree' which behave the same as they
-        in the CoreNLP command line tools.
+        in the CoreNLP command line tools. (note that in the online
+        CoreNLP demo, 'collapsed' is called 'enhanced')
 
         Setting debug=True will cause debugging information (including
         the java command run to be printed."""
@@ -63,6 +65,8 @@ class SubprocessBackend(StanfordDependencies):
             # since otherwise we won't know what SD considers punctuation
             if include_punct or include_erased:
                 command.append('-keepPunct')
+            if not universal:
+                command.append('-originalDependencies')
             if debug:
                 print('Command:', ' '.join(command))
             sd_process = subprocess.Popen(command, stdout=subprocess.PIPE,

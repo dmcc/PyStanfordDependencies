@@ -27,6 +27,7 @@ DEFAULT_CORENLP_VERSION = '3.5.2'
 INSTALL_DIR = '~/.local/share/pystanforddeps'
 
 # list of currently supported representations
+# (note that in the online CoreNLP demo, 'collapsed' is called 'enhanced')
 REPRESENTATIONS = ('basic', 'collapsed', 'CCprocessed', 'collapsedTree')
 
 class JavaRuntimeVersionError(EnvironmentError):
@@ -80,7 +81,8 @@ class StanfordDependencies:
             self.jar_filename = self.setup_and_get_default_path(filename)
             if download_if_missing:
                 self.download_if_missing(version)
-    def convert_trees(self, ptb_trees, representation='basic', **kwargs):
+    def convert_trees(self, ptb_trees, representation='basic', universal=True,
+                      include_punct=True, include_erased=False, **kwargs):
         """Convert a list of Penn Treebank formatted trees (ptb_trees)
         into Stanford Dependencies. The dependencies are represented
         as a list of sentences, where each sentence is itself a list of
@@ -88,16 +90,21 @@ class StanfordDependencies:
 
         Currently supported representations are 'basic', 'collapsed',
         'CCprocessed', and 'collapsedTree' which behave the same as they
-        in the CoreNLP command line tools.
+        in the CoreNLP command line tools. (note that in the online
+        CoreNLP demo, 'collapsed' is called 'enhanced')
 
-        Additionally, most backends accept at least two additional
-        arguments: include_punct (if false, punctuation tokens
-        will not be included) and include_erased (if false and
-        your representation might erase tokens, those tokens will be
-        skipped). See documentation on your backend to see if it supports
-        more options."""
-        return [self.convert_tree(ptb_tree, representation=representation,
-                                  **kwargs)
+        Additional arguments: universal (if True, use universal
+        dependencies if they're available), include_punct (if False,
+        punctuation tokens will not be included), and include_erased
+        (if False and your representation might erase tokens, those
+        tokens will be omitted from the output).
+
+        See documentation on your backend to see if it supports
+        further options."""
+        kwargs.update(representation=representation, universal=universal,
+                      include_punct=include_punct,
+                      include_erased=include_erased)
+        return [self.convert_tree(ptb_tree, **kwargs)
                 for ptb_tree in ptb_trees]
 
     @abstractmethod
@@ -105,7 +112,8 @@ class StanfordDependencies:
         """Converts a single Penn Treebank format tree to Stanford
         Dependencies. With some backends, this can be considerably
         slower than using convert_trees, so consider that if you're
-        doing a batch conversion. See convert_trees for more details."""
+        doing a batch conversion. See convert_trees for more details
+        and a listing of possible kwargs."""
 
     def setup_and_get_default_path(self, jar_base_filename):
         """Determine the user-specific install path for the Stanford
@@ -205,7 +213,7 @@ class StanfordDependencies:
                 from .JPypeBackend import JPypeBackend
                 return JPypeBackend(**extra_args)
             except ImportError:
-                warnings.warn('Error importing JPypeBackend, ' +
+                warnings.warn('Error importing JPypeBackend, '
                               'falling back to SubprocessBackend.')
                 backend = 'subprocess'
             except RuntimeError as r:

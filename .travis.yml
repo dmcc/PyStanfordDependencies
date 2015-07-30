@@ -1,9 +1,20 @@
 sudo: false
-language: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.4"
+
+# we can't test multiple versions of Python and Java 1.8 :(
+# since Java 1.8 is required for newest versions of CoreNLP,
+# we have to give up on testing multiple Python versions
+# (for now?).
+# language: python
+# python:
+  # - "2.6"
+  # - "2.7"
+  # - "3.4"
+
+# yeah, this is weird.
+language: java
+jdk:
+    oraclejdk8
+
 cache:
   directories:
     - $HOME/.local/share/pystanforddeps

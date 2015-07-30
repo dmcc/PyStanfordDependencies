@@ -24,12 +24,15 @@ Submitting changes
 -  Make your changes (please include an update to ``CONTRIBUTORS.rst``)
 
 -  Test your changes with ``flake8 StanfordDependencies`` and
-   ``nosetests`` (you will need the ``flake8`` and ``nose`` packages.
-   More information is available in the `release
-   checklist <https://github.com/dmcc/PyStanfordDependencies/blob/master/CHECKLIST.txt>`__).
-   If you add new code, please add appropriate testing code as well in
-   ``tests/``. See
-   `coveralls <https://coveralls.io/r/dmcc/PyStanfordDependencies?branch=master>`__
+   ``nosetests`` (you will need to install ``flake8``, ``JPype1``,
+   ``nose``, ``graphviz``, and ``asciitree`` packages via pip).
+   Changes should be tested with Python 2.7 and Python 3.4 (both will be
+   tested with Travis CI (see below) if you don't want to create multiple
+   environments). More information is available in the `release checklist
+   <https://github.com/dmcc/PyStanfordDependencies/blob/master/CHECKLIST.txt>`__).
+   If you add new code, please add appropriate
+   testing code as well in ``tests/``. See `coveralls
+   <https://coveralls.io/r/dmcc/PyStanfordDependencies?branch=master>`__
    for current test coverage. All new code should include at least some
    test that covers it.
 

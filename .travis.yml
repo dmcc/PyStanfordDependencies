@@ -19,12 +19,14 @@ cache:
   directories:
     - $HOME/.local/share/pystanforddeps
 install:
-  - pip install jpype1
-  - pip install python-coveralls
-  - pip install asciitree
-  - pip install graphviz
+  - python --version
+  - pip install --user nose
+  - pip install --user jpype1
+  - pip install --user python-coveralls
+  - pip install --user asciitree
+  - pip install --user graphviz
 script:
-  - pip install .
+  - pip install --user .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies
 after_success:
   - coveralls

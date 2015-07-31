@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 language: python
 python:
@@ -6,20 +6,22 @@ python:
   - "2.7"
   - "3.4"
 
-# Python image doesn't include Java 1.8 by default
-addons: {apt: {packages: oracle-java8-installer}}
-
 cache:
   directories:
     - $HOME/.local/share/pystanforddeps
 
+before_install:
+  - sudo add-apt-repository --yes ppa:openjdk-r/ppa
+  - sudo apt-get update
 install:
-  - python --version
+  - sudo apt-get install openjdk-8-jdk
   - pip install nose
   - pip install jpype1
   - pip install python-coveralls
   - pip install asciitree
   - pip install graphviz
+before_script:
+  - python --version
 script:
   - pip install .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies

@@ -1,23 +1,18 @@
 sudo: false
 
-# we can't test multiple versions of Python and Java 1.8 :(
-# since Java 1.8 is required for newest versions of CoreNLP,
-# we have to give up on testing multiple Python versions
-# (for now?).
-# language: python
-# python:
-  # - "2.6"
-  # - "2.7"
-  # - "3.4"
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.4"
 
-# yeah, this is weird.
-language: java
-jdk:
-    oraclejdk8
+# Python image doesn't include Java 1.8 by default
+addons: {apt: {packages: oracle-java8-installer}}
 
 cache:
   directories:
     - $HOME/.local/share/pystanforddeps
+
 install:
   - python --version
   - pip install --user nose

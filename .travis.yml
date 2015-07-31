@@ -15,13 +15,13 @@ cache:
 
 install:
   - python --version
-  - pip install --user nose
-  - pip install --user jpype1
-  - pip install --user python-coveralls
-  - pip install --user asciitree
-  - pip install --user graphviz
+  - pip install nose
+  - pip install jpype1
+  - pip install python-coveralls
+  - pip install asciitree
+  - pip install graphviz
 script:
-  - pip install --user .
+  - pip install .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies
 after_success:
   - coveralls

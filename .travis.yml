@@ -23,10 +23,8 @@ install:
   - pip install graphviz
 before_script:
   - python --version
-  - export LD_LIBRARY_PATH=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH
+  - export LD_PRELOAD=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
   - java -version
-  - echo $PATH
-  - echo $LD_LIBRARY_PATH
 script:
   - pip install .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies

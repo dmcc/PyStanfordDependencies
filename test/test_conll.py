@@ -17,7 +17,7 @@ from .test_stanforddependencies import stringify_sentence
 
 older_than_py27 = sys.version_info[:2] < (2, 7)
 
-# example from http://ilk.uvt.nl/conll/example.html
+# examples from http://ilk.uvt.nl/conll/example.html
 conll_example = '''
 1	Cathy	Cathy	N	N	eigen|ev|neut	2	su	_	_
 2	zag	zie	V	V	trans|ovt|1of2of3|ev	0	ROOT	_	_
@@ -27,13 +27,53 @@ conll_example = '''
 6	.	.	Punc	Punc	punt	5	punct	_	_
 '''
 
+conll_example2 = '''
+1	Dat	dat	Pron	Pron	aanw|neut|attr	2	det	_	_
+2	werkwoord	werkwoord	N	N	soort|ev|neut	6	obj1	_	_
+3	had	heb	V	V	hulp|ovt|1of2of3|ev	0	ROOT	_	_
+4	ze	ze	Pron	Pron	per|3|evofmv|nom	6	su	_	_
+5	zelf	zelf	Pron	Pron	aanw|neut|attr|wzelf	3	predm	_	_
+6	uitgevonden	vind	V	V	trans|verldw|onverv	3	vc	_	_
+7	.	.	Punc	Punc	punt	6	punct	_	_
+'''
+
 def test_conll_readwrite_sentence():
     sentence = Sentence.from_conll(conll_example.splitlines())
     assert sentence.as_conll() == conll_example.strip()
 
+def test_conll_readwrite_sentence2():
+    sentence = Sentence.from_conll(conll_example2.splitlines())
+    assert sentence.as_conll() == conll_example2.strip()
+
+def test_conll_readwrite_sentence_extra_whitespace():
+    sentence = Sentence.from_conll(conll_example2.splitlines() + ['', '', ''])
+    assert sentence.as_conll() == conll_example2.strip()
+
+    sentence = Sentence.from_conll(['', ''] + conll_example2.splitlines() +
+                                   ['', ''])
+    assert sentence.as_conll() == conll_example2.strip()
+
+    sentence = Sentence.from_conll([''] + conll_example2.splitlines())
+    assert sentence.as_conll() == conll_example2.strip()
+
 def test_conll_readwrite_corpus():
     corpus = Corpus.from_conll(conll_example.splitlines())
+    assert len(corpus) == 1
     assert corpus.as_conll() == conll_example.strip()
+
+def test_conll_readwrite_corpus_multiple_sentences():
+    corpus = Corpus.from_conll(conll_example.splitlines() + [''] +
+                               conll_example2.splitlines())
+    assert len(corpus) == 2
+    assert corpus.as_conll() == conll_example.strip() + '\n' + \
+                                conll_example2.strip()
+    assert corpus[0].as_conll() == conll_example.strip()
+    assert corpus[1].as_conll() == conll_example2.strip()
+
+def test_conll_readwrite_corpus_empty():
+    corpus = Corpus.from_conll([])
+    assert len(corpus) == 0
+    assert corpus.as_conll() == ''
 
 def test_conll_as_asciitree():
     asciitree_out = '''
@@ -362,6 +402,33 @@ prep_with(burritos-5, rice-10)
 conj_negcc(beans-7, rice-10)
 punct(cooks-2, .-11)
     '''.strip().splitlines()
+    corpus = Corpus.from_stanford_dependencies(sample_deps, [trees_sd.tree4,
+                                                             trees_sd.tree5])
+    assert len(corpus) == 2
+    assert stringify_sentence(corpus[0]) == trees_sd.tree4_out_CCprocessed
+    assert stringify_sentence(corpus[1]) == trees_sd.tree5_out_CCprocessed
+
+def test_read_sd_corpus_multiple_extra_space():
+    sample_deps = '''
+
+det(burrito-2, A-1)
+root(ROOT-0, burrito-2)
+prep_with(burrito-2, beans-4)
+prep_with(burrito-2, chicken-7)
+conj_negcc(beans-4, chicken-7)
+punct(burrito-2, .-8)
+
+nsubj(cooks-2, Ed-1)                          
+nsubj(sells-4, Ed-1)
+root(ROOT-0, cooks-2)
+conj_and(cooks-2, sells-4)
+dobj(cooks-2, burritos-5)
+prep_with(burritos-5, beans-7)
+prep_with(burritos-5, rice-10)
+conj_negcc(beans-7, rice-10)
+punct(cooks-2, .-11)
+
+    '''.splitlines()
     corpus = Corpus.from_stanford_dependencies(sample_deps, [trees_sd.tree4,
                                                              trees_sd.tree5])
     assert len(corpus) == 2

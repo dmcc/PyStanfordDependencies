@@ -141,9 +141,10 @@ class JPypeBackend(StanfordDependencies):
 
             if self.universal_converter == self.converter:
                 import warnings
-                warnings.warn("This jar doesn't support universal dependencies, "
-                              "falling back to Stanford Dependencies. To suppress this "
-                              "message, call with universal=False")
+                warnings.warn("This jar doesn't support universal "
+                              "dependencies, falling back to Stanford "
+                              "Dependencies. To suppress this message, "
+                              "call with universal=False")
         else:
             converter = self.converter
 

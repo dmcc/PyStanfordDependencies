@@ -59,14 +59,14 @@ def test_conll_readwrite_sentence_extra_whitespace():
 def test_conll_readwrite_corpus():
     corpus = Corpus.from_conll(conll_example.splitlines())
     assert len(corpus) == 1
-    assert corpus.as_conll() == conll_example.strip()
+    assert corpus.as_conll() == conll_example.strip() + '\n'
 
 def test_conll_readwrite_corpus_multiple_sentences():
     corpus = Corpus.from_conll(conll_example.splitlines() + [''] +
                                conll_example2.splitlines())
     assert len(corpus) == 2
-    assert corpus.as_conll() == conll_example.strip() + '\n' + \
-                                conll_example2.strip()
+    assert corpus.as_conll() == conll_example.strip() + '\n\n' + \
+                                conll_example2.strip() + '\n'
     assert corpus[0].as_conll() == conll_example.strip()
     assert corpus[1].as_conll() == conll_example2.strip()
 

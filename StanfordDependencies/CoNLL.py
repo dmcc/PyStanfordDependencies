@@ -72,7 +72,9 @@ class Token(namedtuple('Token', FIELD_NAMES)):
 class Sentence(list):
     """Sequence of Token objects."""
     def as_conll(self):
-        """Represent this Sentence as a string in CoNLL-X format."""
+        """Represent this Sentence as a string in CoNLL-X format.  Note
+        that this doesn't end in a newline. Also see Corpus.as_conll()
+        for converting multiple sentences."""
         return '\n'.join(token.as_conll() for token in self)
     def as_asciitree(self, str_func=None):
         """Represent this Sentence as an ASCII tree string. Requires
@@ -214,7 +216,9 @@ class Corpus(list):
     """Sequence of Sentence objects."""
     def as_conll(self):
         """Represent the entire corpus as a string in CoNLL-X format."""
-        return '\n'.join(sentence.as_conll() for sentence in self)
+        if not self:
+            return ''
+        return '\n\n'.join(sentence.as_conll() for sentence in self) + '\n'
     @classmethod
     def from_conll(this_class, stream):
         """Construct a Corpus. stream is an iterable over strings where

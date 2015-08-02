@@ -36,7 +36,7 @@ class Token(namedtuple('Token', FIELD_NAMES)):
     - deprel (the dependency relation between this token and its head)
 
     There are other fields but they typically won't be populated by
-    StanfordDependencies.
+    StanfordDependencies. Fields are immutable.
 
     See http://ilk.uvt.nl/conll/#dataformat for a complete description."""
     def __repr__(self):
@@ -71,6 +71,23 @@ class Token(namedtuple('Token', FIELD_NAMES)):
 
 class Sentence(list):
     """Sequence of Token objects."""
+    def renumber(self):
+        """Destructively renumber the indices based on the actual tokens
+        (e.g., if there are gaps between token indices, this will remove
+        them). Old Token objects will still exist, so you'll need to
+        update your references."""
+        mapping = {0: 0} # old index -> real index
+        needs_renumbering = False
+        for real_index, token in enumerate(self, 1):
+            mapping[token.index] = real_index
+            if token.index != real_index:
+                needs_renumbering = True
+
+        if needs_renumbering:
+            # update all indices
+            self[:] = [token._replace(index=mapping[token.index],
+                                      head=mapping[token.head])
+                       for token in self]
     def as_conll(self):
         """Represent this Sentence as a string in CoNLL-X format.  Note
         that this doesn't end in a newline. Also see Corpus.as_conll()
@@ -178,6 +195,9 @@ class Sentence(list):
         sentence = this_class()
         covered_indices = set()
         tags_and_words = ptb_tags_and_words_re.findall(tree)
+        # perform some basic cleanups
+        tags_and_words = [(tag, word.replace(r'\/', '/'))
+                          for (tag, word) in tags_and_words if tag != '-NONE-']
         for line in stream:
             if not line.strip():
                 if sentence:

@@ -182,11 +182,56 @@ Token(index=10, form='rice', lemma='rice', cpos='NN', pos='NN', head=7, deprel='
 Token(index=11, form='.', lemma='.', cpos='.', pos='.', head=2, deprel='punct')
     '''.strip()
 
+    # tests -NONE- handling
+    tree6 = '''
+( (S 
+    (S-TPC-1 
+      (NP-SBJ (PRP He) )
+      (ADVP (RB also) )
+      (VP (VBZ is) 
+        (NP-PRD (DT a) (NN consensus) (NN manager) )))
+    (, ,) 
+    (NP-SBJ (NNS insiders) )
+    (VP (VBP say) 
+      (SBAR (-NONE- 0) 
+        (S (-NONE- *T*-1) )))
+    (. .) ))
+    '''
+    tree6_out = '''
+Token(index=1, form='He', cpos='PRP', pos='PRP', head=6, deprel='nsubj')
+Token(index=2, form='also', cpos='RB', pos='RB', head=6, deprel='advmod')
+Token(index=3, form='is', cpos='VBZ', pos='VBZ', head=6, deprel='cop')
+Token(index=4, form='a', cpos='DT', pos='DT', head=6, deprel='det')
+Token(index=5, form='consensus', cpos='NN', pos='NN', head=6, deprel='nn')
+Token(index=6, form='manager', cpos='NN', pos='NN', head=9, deprel='ccomp')
+Token(index=7, form=',', cpos=',', pos=',', head=9, deprel='punct')
+Token(index=8, form='insiders', cpos='NNS', pos='NNS', head=9, deprel='nsubj')
+Token(index=9, form='say', cpos='VBP', pos='VBP', head=0, deprel='root')
+Token(index=10, form='.', cpos='.', pos='.', head=9, deprel='punct')
+'''.strip()
+
+    # tests weird \/ handling
+    tree7 = '''(S1 (NP 
+(NP (NNP PRIME) (NNP RATE) )
+(: :) 
+(NP (CD 10) (CD 1\/2) (NN %) )
+(. .) ))'''
+    tree7_out = '''
+Token(index=1, form='PRIME', cpos='NNP', pos='NNP', head=2, deprel='nn')
+Token(index=2, form='RATE', cpos='NNP', pos='NNP', head=0, deprel='root')
+Token(index=3, form=':', cpos=':', pos=':', head=2, deprel='punct')
+Token(index=4, form='10', cpos='CD', pos='CD', head=6, deprel='num')
+Token(index=5, form='1/2', cpos='CD', pos='CD', head=6, deprel='num')
+Token(index=6, form='%', cpos='NN', pos='NN', head=2, deprel='dep')
+Token(index=7, form='.', cpos='.', pos='.', head=2, deprel='punct')
+    '''.strip()
+
     @classmethod
     def get_basic_test_trees(self):
         return ((self.tree1, self.tree1_out), (self.tree2, self.tree2_out_basic),
                 (self.tree3, self.tree3_out), (self.tree4, self.tree4_out_basic),
-                (self.tree5, self.tree5_out_basic))
+                (self.tree5, self.tree5_out_basic), (self.tree6, self.tree6_out),
+                (self.tree7, self.tree7_out))
     @classmethod
     def get_repr_test_tree2(self):
         return sorted(dict(basic=self.tree2_out_basic, collapsed=self.tree2_out_collapsed,
@@ -322,3 +367,27 @@ Token(index=9, form='not', lemma='not', cpos='RB', pos='RB', head=7, deprel='cc'
 Token(index=10, form='rice', lemma='rice', cpos='NN', pos='NN', head=7, deprel='conj')
 Token(index=11, form='.', lemma='.', cpos='.', pos='.', head=2, deprel='punct')
     '''.strip()
+
+    tree6_out = '''
+Token(index=1, form='He', cpos='PRP', pos='PRP', head=6, deprel='nsubj')
+Token(index=2, form='also', cpos='RB', pos='RB', head=6, deprel='advmod')
+Token(index=3, form='is', cpos='VBZ', pos='VBZ', head=6, deprel='cop')
+Token(index=4, form='a', cpos='DT', pos='DT', head=6, deprel='det')
+Token(index=5, form='consensus', cpos='NN', pos='NN', head=6, deprel='compound')
+Token(index=6, form='manager', cpos='NN', pos='NN', head=9, deprel='ccomp')
+Token(index=7, form=',', cpos=',', pos=',', head=9, deprel='punct')
+Token(index=8, form='insiders', cpos='NNS', pos='NNS', head=9, deprel='nsubj')
+Token(index=9, form='say', cpos='VBP', pos='VBP', head=0, deprel='root')
+Token(index=10, form='.', cpos='.', pos='.', head=9, deprel='punct')
+'''.strip()
+
+    tree7_out = '''
+Token(index=1, form='PRIME', cpos='NNP', pos='NNP', head=2, deprel='compound')
+Token(index=2, form='RATE', cpos='NNP', pos='NNP', head=0, deprel='root')
+Token(index=3, form=':', cpos=':', pos=':', head=2, deprel='punct')
+Token(index=4, form='10', cpos='CD', pos='CD', head=6, deprel='nummod')
+Token(index=5, form='1/2', cpos='CD', pos='CD', head=6, deprel='nummod')
+Token(index=6, form='%', cpos='NN', pos='NN', head=2, deprel='dep')
+Token(index=7, form='.', cpos='.', pos='.', head=2, deprel='punct')
+    '''.strip()
+

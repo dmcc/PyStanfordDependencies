@@ -89,7 +89,7 @@ class JPypeBackend(StanfordDependencies):
 
         tagged_yield = self._listify(tree.taggedYield())
         indices_to_words = dict(enumerate(tagged_yield, 1))
-        tokens = Sentence()
+        sentence = Sentence()
         covered_indices = set()
 
         def add_token(index, form, head, deprel):
@@ -101,7 +101,7 @@ class JPypeBackend(StanfordDependencies):
             token = Token(index=index, form=form, lemma=lemma, cpos=tag,
                           pos=tag, feats=None, head=head, deprel=deprel,
                           phead=None, pdeprel=None)
-            tokens.append(token)
+            sentence.append(token)
 
         # add token for each dependency
         for dep in deps:
@@ -122,8 +122,11 @@ class JPypeBackend(StanfordDependencies):
                     continue
                 add_token(index, form, head=0, deprel='erased')
             # erased generally disrupt the ordering of the sentence
-            tokens.sort()
-        return tokens
+            sentence.sort()
+
+        if representation == 'basic':
+            sentence.renumber()
+        return sentence
     def stem(self, form, tag):
         """Returns the stem of word with specific form and part-of-speech
         tag according to the Stanford lemmatizer. Lemmas are cached."""

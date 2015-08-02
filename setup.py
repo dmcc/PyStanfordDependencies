@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='PyStanfordDependencies',
-      version='0.1.7',
+      version='0.2.0',
       description='Python interface for converting Penn Treebank trees to '
                   'Stanford Dependencies',
       long_description=open('README.rst').read(),

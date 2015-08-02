@@ -23,9 +23,10 @@ Submitting changes
 
 -  Make your changes (please include an update to ``CONTRIBUTORS.rst``)
 
--  Test your changes with ``flake8 StanfordDependencies`` and
-   ``nosetests`` (you will need to install ``flake8``, ``JPype1``,
-   ``nose``, ``graphviz``, and ``asciitree`` packages via pip).
+-  Test your code's formatting with ``flake8 StanfordDependencies`` and
+   output with ``nosetests`` (you will need to install ``flake8``,
+   ``JPype1``, ``nose``, ``graphviz``, and ``asciitree`` packages via
+   pip).  You'll need some implementation of Java 1.8 to run the tests.
    Changes should be tested with Python 2.7 and Python 3.4 (both will be
    tested with Travis CI (see below) if you don't want to create multiple
    environments). More information is available in the `release checklist

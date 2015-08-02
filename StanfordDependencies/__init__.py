@@ -112,6 +112,15 @@ By default, PyStanfordDependencies will attempt to use the ``jpype``
 backend. If ``jpype`` isn't available or crashes on startup,
 PyStanfordDependencies will fallback to ``subprocess`` with a warning.
 
+Universal Dependencies status
+-----------------------------
+PyStanfordDependencies mostly supports `Universal Dependencies
+<http://universaldependencies.github.io/docs/>`_ (see `issue #10
+<https://github.com/dmcc/PyStanfordDependencies/issues/10>`_ for the
+most up to date status). PyStanfordDependencies output matches Universal
+Dependencies in terms of structure and dependency labels, but Universal
+POS tags and features are missing.
+
 More information
 ----------------
 Licensed under `Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.
@@ -124,13 +133,15 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
+- 0.2.0 (2015.08.02): Universal Dependencies support (mostly),
+  Python 3 support (fully), minor API updates
 - 0.1.7 (2015.06.13): Bugfixes for JPype, support for IBM Java
 - 0.1.6 (2015.02.12): Support for graphviz formatting, CoreNLP 3.5.1,
   better Windows portability
 - 0.1.5 (2015.01.10): Support for ASCII tree formatting
 - 0.1.4 (2015.01.07): Fix CCprocessed support
 - 0.1.3 (2015.01.03): Bugfixes, coveralls integration, refactoring
-- 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis-CI
+- 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis CI
   support, bugfixes
 - 0.1.1 (2014.12.15): More docs, fewer bugs
 - 0.1 (2014.12.14): Initial version
@@ -144,5 +155,5 @@ __all__ = (StanfordDependencies, get_instance, JavaRuntimeVersionError,
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'
-__version__ = '0.1.7'
+__version__ = '0.2.0'
 __email__ = 'notsoweird+pystanforddependencies@gmail.com'

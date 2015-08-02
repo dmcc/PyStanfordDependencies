@@ -87,27 +87,33 @@ class DefaultBackendTest(unittest.TestCase):
         assert isinstance(sentences, Corpus)
         assert isinstance(sentences[0], Sentence)
         assert isinstance(sentences[0][0], Token)
-        for tokens, expected in zip(sentences, expected_outputs):
-            self.assertTokensMatch(tokens, expected)
+        for tree, tokens, expected in zip(trees, sentences, expected_outputs):
+            self.assertTokensMatch(tree, tokens, expected)
     def test_reprs(self):
         for representation, expected in self.trees.get_repr_test_tree2():
-            self.assertConverts(self.trees.tree2, expected, representation=representation)
+            self.assertConverts(self.trees.tree2, expected,
+                                representation=representation)
         for representation, expected in self.trees.get_repr_test_tree4():
-            self.assertConverts(self.trees.tree4, expected, representation=representation)
+            self.assertConverts(self.trees.tree4, expected,
+                                representation=representation)
         for representation, expected in self.trees.get_repr_test_tree5():
-            self.assertConverts(self.trees.tree5, expected, representation=representation)
+            self.assertConverts(self.trees.tree5, expected,
+                                representation=representation)
     def test_punct_and_erased(self):
-        self.assertConverts(self.trees.tree5, self.trees.tree5_out_collapsedTree_no_punct,
+        self.assertConverts(self.trees.tree5,
+                            self.trees.tree5_out_collapsedTree_no_punct,
                             representation='collapsedTree',
                             include_punct=False, include_erased=False)
         self.assertConverts(self.trees.tree5,
                             self.trees.tree5_out_collapsedTree_erased_no_punct,
                             representation='collapsedTree',
                             include_punct=False, include_erased=True)
-        self.assertConverts(self.trees.tree5, self.trees.tree5_out_collapsedTree,
+        self.assertConverts(self.trees.tree5,
+                            self.trees.tree5_out_collapsedTree,
                             representation='collapsedTree',
                             include_punct=True, include_erased=False)
-        self.assertConverts(self.trees.tree5, self.trees.tree5_out_collapsedTree_erased,
+        self.assertConverts(self.trees.tree5,
+                            self.trees.tree5_out_collapsedTree_erased,
                             representation='collapsedTree',
                             include_punct=True, include_erased=True)
     def test_bogus_representation(self):
@@ -142,13 +148,13 @@ class DefaultBackendTest(unittest.TestCase):
 
     def assertConverts(self, tree, expected, **conversion_options):
         conversion_options.setdefault('universal', self.universal)
-        print('tree:')
-        print(tree)
         print('conversion_options:')
         print(conversion_options)
         tokens = self.sd.convert_tree(tree, **conversion_options)
-        self.assertTokensMatch(tokens, expected)
-    def assertTokensMatch(self, tokens, expected_stringification):
+        self.assertTokensMatch(tree, tokens, expected)
+    def assertTokensMatch(self, tree, tokens, expected_stringification):
+        print('tree:')
+        print(tree)
         stringified = stringify_sentence(tokens)
         print('actual stringified:')
         print(stringified)
@@ -194,7 +200,8 @@ class JPypeBackendTest(DefaultBackendTest):
     backend = 'jpype'
 
     def test_add_lemmas(self):
-        self.assertConverts(self.trees.tree5, self.trees.tree5_out_basic_lemmas,
+        self.assertConverts(self.trees.tree5,
+                            self.trees.tree5_out_basic_lemmas,
                             add_lemmas=True)
     def test_report_version_error(self):
         self.assertRaises(JavaRuntimeVersionError,

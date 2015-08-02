@@ -20,6 +20,8 @@ except ImportError:
 
 import warnings
 
+from .CoNLL import Corpus
+
 # ideally, this will be set to the latest version of CoreNLP
 DEFAULT_CORENLP_VERSION = '3.5.2'
 
@@ -83,10 +85,10 @@ class StanfordDependencies:
                 self.download_if_missing(version)
     def convert_trees(self, ptb_trees, representation='basic', universal=True,
                       include_punct=True, include_erased=False, **kwargs):
-        """Convert a list of Penn Treebank formatted trees (ptb_trees)
+        """Convert a list of Penn Treebank formatted strings (ptb_trees)
         into Stanford Dependencies. The dependencies are represented
-        as a list of sentences, where each sentence is itself a list of
-        Token objects.
+        as a list of sentences (CoNLL.Corpus), where each sentence
+        (CoNLL.Sentence) is itself a list of CoNLL.Token objects.
 
         Currently supported representations are 'basic', 'collapsed',
         'CCprocessed', and 'collapsedTree' which behave the same as they
@@ -104,8 +106,8 @@ class StanfordDependencies:
         kwargs.update(representation=representation, universal=universal,
                       include_punct=include_punct,
                       include_erased=include_erased)
-        return [self.convert_tree(ptb_tree, **kwargs)
-                for ptb_tree in ptb_trees]
+        return Corpus(self.convert_tree(ptb_tree, **kwargs)
+                      for ptb_tree in ptb_trees)
 
     @abstractmethod
     def convert_tree(self, ptb_tree, representation='basic', **kwargs):

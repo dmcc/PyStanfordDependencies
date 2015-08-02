@@ -16,6 +16,7 @@ from StanfordDependencies import (StanfordDependencies, get_instance,
                                   JavaRuntimeVersionError)
 from StanfordDependencies.SubprocessBackend import SubprocessBackend
 from StanfordDependencies.JPypeBackend import JPypeBackend
+from StanfordDependencies.CoNLL import Corpus, Sentence, Token
 from .data import trees_sd, trees_ud
 
 def stringify_sentence(tokens):
@@ -82,6 +83,10 @@ class DefaultBackendTest(unittest.TestCase):
     def test_basic_multiple(self):
         trees, expected_outputs = zip(*self.trees.get_basic_test_trees())
         sentences = self.sd.convert_trees(trees, universal=self.universal)
+        assert len(sentences) == len(expected_outputs)
+        assert isinstance(sentences, Corpus)
+        assert isinstance(sentences[0], Sentence)
+        assert isinstance(sentences[0][0], Token)
         for tokens, expected in zip(sentences, expected_outputs):
             self.assertTokensMatch(tokens, expected)
     def test_reprs(self):

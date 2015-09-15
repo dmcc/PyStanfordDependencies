@@ -79,10 +79,16 @@ class SubprocessBackend(StanfordDependencies):
         finally:
             os.remove(input_file.name)
 
-        sentences = Corpus.from_stanford_dependencies(stdout.splitlines(),
-                                                      ptb_trees,
-                                                      include_erased,
-                                                      include_punct)
+        try:
+            sentences = Corpus.from_stanford_dependencies(stdout.splitlines(),
+                                                          ptb_trees,
+                                                          include_erased,
+                                                          include_punct)
+        except:
+            print("Error during conversion")
+            print("stdout:", stdout)
+            print("stderr:", stderr)
+            raise
 
         assert len(sentences) == len(ptb_trees), \
             "Only got %d sentences from Stanford Dependencies when " \

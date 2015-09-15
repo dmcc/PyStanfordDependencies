@@ -130,7 +130,7 @@ Release summaries
 -----------------
 - 0.2.0 (2015.08.02): Universal Dependencies support (mostly),
   Python 3 support (fully), minor API updates
-- 0.1.7 (2015.06.13): Bugfixes for JPype, support for IBM Java
+- 0.1.7 (2015.06.13): Bugfixes for JPype, handle version mismatches in IBM Java
 - 0.1.6 (2015.02.12): Support for graphviz formatting, CoreNLP 3.5.1,
   better Windows portability
 - 0.1.5 (2015.01.10): Support for ASCII tree formatting

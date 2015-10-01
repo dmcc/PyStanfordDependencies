@@ -51,6 +51,7 @@ class SubprocessBackend(StanfordDependencies):
         input_file = tempfile.NamedTemporaryFile(delete=False)
         try:
             for ptb_tree in ptb_trees:
+                self._raise_on_bad_input(ptb_tree)
                 tree_with_line_break = ptb_tree + "\n"
                 input_file.write(tree_with_line_break.encode("utf-8"))
             input_file.flush()
@@ -75,7 +76,13 @@ class SubprocessBackend(StanfordDependencies):
             return_code = sd_process.wait()
             stderr = sd_process.stderr.read()
             stdout = sd_process.stdout.read()
-            self._raise_on_bad_exitcode(return_code, stderr, debug)
+
+            if debug:
+                print("stdout: {%s}" % stdout)
+                print("stderr: {%s}" % stderr)
+                print('Exit code:', return_code)
+
+            self._raise_on_bad_exit_or_output(return_code, stderr)
         finally:
             os.remove(input_file.name)
 
@@ -84,31 +91,29 @@ class SubprocessBackend(StanfordDependencies):
                                                           ptb_trees,
                                                           include_erased,
                                                           include_punct)
+            for sentence, ptb_tree in zip(sentences, ptb_trees):
+                if len(sentence) == 0:
+                    raise ValueError("Invalid PTB tree: %r" % ptb_tree)
         except:
             print("Error during conversion")
-            print("stdout: {%s}" % stdout)
-            print("stderr: {%s}" % stderr)
+            if not debug:
+                print("stdout: {%s}" % stdout)
+                print("stderr: {%s}" % stderr)
             raise
-
-        if debug:
-            print("stdout: {%s}" % stdout)
-            print("stderr: {%s}" % stderr)
 
         assert len(sentences) == len(ptb_trees), \
             "Only got %d sentences from Stanford Dependencies when " \
             "given %d trees." % (len(sentences), len(ptb_trees))
         return sentences
     def convert_tree(self, ptb_tree, **kwargs):
-        """Converts a single Penn Treebank format tree to Stanford
-        Dependencies. See convert_trees for more details."""
+        """Converts a single Penn Treebank formatted tree (a string)
+        to Stanford Dependencies. See convert_trees for more details."""
         return self.convert_trees([ptb_tree], **kwargs)[0]
 
     @staticmethod
-    def _raise_on_bad_exitcode(return_code, stderr, debug=False):
-        if debug:
-            print('Exit code:', return_code)
-            if stderr.strip():
-                print('stderr:', stderr)
+    def _raise_on_bad_exit_or_output(return_code, stderr):
+        if 'PennTreeReader: warning:' in stderr:
+            raise ValueError("Tree(s) not in valid Penn Treebank format")
 
         if return_code:
             if 'Unsupported major.minor version' in stderr:

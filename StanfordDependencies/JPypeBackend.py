@@ -82,8 +82,11 @@ class JPypeBackend(StanfordDependencies):
         """Arguments are as in StanfordDependencies.convert_trees but with
         the addition of add_lemmas. If add_lemmas=True, we will run the
         Stanford CoreNLP lemmatizer and fill in the lemma field."""
+        self._raise_on_bad_input(ptb_tree)
         self._raise_on_bad_representation(representation)
         tree = self.treeReader(ptb_tree)
+        if tree is None:
+            raise ValueError("Invalid Penn Treebank tree: %r" % ptb_tree)
         deps = self._get_deps(tree, include_punct, representation,
                               universal=universal)
 

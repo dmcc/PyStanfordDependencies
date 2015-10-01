@@ -119,6 +119,26 @@ class DefaultBackendTest(unittest.TestCase):
                             self.trees.tree5_out_collapsedTree_erased,
                             representation='collapsedTree',
                             include_punct=True, include_erased=True)
+    def test_bogus_input_type(self):
+        self.assertRaises(TypeError, self.sd.convert_tree, ['bogus'])
+        self.assertRaises(TypeError, self.sd.convert_tree, [-7, 7, -4])
+        self.assertRaises(TypeError, self.sd.convert_tree, 3)
+        self.assertRaises(TypeError, self.sd.convert_tree, {})
+        self.assertRaises(TypeError, self.sd.convert_tree, open)
+        self.assertRaises(TypeError, self.sd.convert_tree, str)
+        self.assertRaises(TypeError, self.sd.convert_trees, 3)
+        self.assertRaises(TypeError, self.sd.convert_trees, {444: 555})
+        self.assertRaises(TypeError, self.sd.convert_trees, [1, 2, 3])
+    def test_bogus_input_value(self):
+        self.assertRaises(ValueError, self.sd.convert_tree, '(S')
+        self.assertRaises(ValueError, self.sd.convert_tree, '')
+        self.assertRaises(ValueError, self.sd.convert_tree, ' ')
+        self.assertRaises(ValueError, self.sd.convert_tree, '\n')
+        self.assertRaises(ValueError, self.sd.convert_tree, '"')
+        self.assertRaises(ValueError, self.sd.convert_tree, '((Hi there)')
+        self.assertRaises(ValueError, self.sd.convert_tree, 'bogus')
+        self.assertRaises(ValueError, self.sd.convert_tree, 'bogus)')
+        self.assertRaises(ValueError, self.sd.convert_tree, 'bogus))')
     def test_bogus_representation(self):
         self.assertRaises(ValueError, self.sd.convert_tree, self.trees.tree1,
                           representation='bogus')
@@ -149,6 +169,9 @@ class DefaultBackendTest(unittest.TestCase):
         self.assertRaises(TypeError, self.sd.get_jar_url, 10)
         self.assertRaises(TypeError, self.sd.get_jar_url, (3, 5, 0))
 
+    #
+    # helper functions
+    #
     def assertConverts(self, tree, expected, **conversion_options):
         conversion_options.setdefault('universal', self.universal)
         print('conversion_options:')
@@ -172,26 +195,24 @@ class SubprocessBackendTest(DefaultBackendTest):
 
     def test_raise_on_bad_exitcode(self):
         self.assertRaises(ValueError,
-                          self.sd._raise_on_bad_exitcode, 100, '')
+                          self.sd._raise_on_bad_exit_or_output, 100, '')
         self.assertRaises(ValueError,
-                          self.sd._raise_on_bad_exitcode, 1, '')
+                          self.sd._raise_on_bad_exit_or_output, 1, '')
         self.assertRaises(ValueError,
-                          self.sd._raise_on_bad_exitcode, -1, '')
+                          self.sd._raise_on_bad_exit_or_output, -1, '')
         self.assertRaises(JavaRuntimeVersionError,
-                          self.sd._raise_on_bad_exitcode, 1,
+                          self.sd._raise_on_bad_exit_or_output, 1,
                           'Unsupported major.minor version')
         self.assertRaises(JavaRuntimeVersionError,
-                          self.sd._raise_on_bad_exitcode, -7,
-                          'Unsupported major.minor version',
-                          debug=True)
+                          self.sd._raise_on_bad_exit_or_output, -7,
+                          'Unsupported major.minor version')
         self.assertRaises(JavaRuntimeVersionError,
-                          self.sd._raise_on_bad_exitcode, 1,
+                          self.sd._raise_on_bad_exit_or_output, 1,
                           'JVMCFRE003 bad major version')
         self.assertRaises(JavaRuntimeVersionError,
-                          self.sd._raise_on_bad_exitcode, -7,
-                          'JVMCFRE003 bad major version',
-                          debug=True)
-        self.sd._raise_on_bad_exitcode(0, '') # shouldn't raise anything
+                          self.sd._raise_on_bad_exit_or_output, -7,
+                          'JVMCFRE003 bad major version')
+        self.sd._raise_on_bad_exit_or_output(0, '') # shouldn't raise anything
 
     def test_convert_debug(self):
         self.assertConverts(self.trees.tree1, self.trees.tree1_out, debug=True)

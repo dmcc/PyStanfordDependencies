@@ -18,6 +18,11 @@ try:
 except ImportError:
     from urllib.request import FancyURLopener
 
+try:
+    string_type = basestring # Python 2.6/7
+except NameError:
+    string_type = str # Python 3
+
 import warnings
 
 from .CoNLL import Corpus
@@ -156,6 +161,14 @@ class StanfordDependencies:
             repr_desc = ', '.join(map(repr, REPRESENTATIONS))
             raise ValueError("Unknown representation: %r (should be one "
                              "of %s)" % (representation, repr_desc))
+
+    @staticmethod
+    def _raise_on_bad_input(ptb_tree):
+        """Ensure that ptb_tree is a valid Penn Treebank datatype or
+        raises a TypeError. Currently, this requires that ptb_tree is
+        a str or basestring (depending on Python version)."""
+        if not isinstance(ptb_tree, string_type):
+            raise TypeError("ptb_tree is not a string: %r" % ptb_tree)
 
     @staticmethod
     def get_jar_url(version=None):

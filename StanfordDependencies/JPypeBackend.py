@@ -92,7 +92,7 @@ class JPypeBackend(StanfordDependencies):
         sentence = Sentence()
         covered_indices = set()
 
-        def add_token(index, form, head, deprel):
+        def add_token(index, form, head, deprel, extra):
             tag = indices_to_words[index].tag()
             if add_lemmas:
                 lemma = self.stem(form, tag)
@@ -100,7 +100,7 @@ class JPypeBackend(StanfordDependencies):
                 lemma = None
             token = Token(index=index, form=form, lemma=lemma, cpos=tag,
                           pos=tag, feats=None, head=head, deprel=deprel,
-                          phead=None, pdeprel=None)
+                          phead=None, pdeprel=None, extra=extra)
             sentence.append(token)
 
         # add token for each dependency
@@ -110,7 +110,17 @@ class JPypeBackend(StanfordDependencies):
             deprel = dep.reln().toString()
             form = indices_to_words[index].value()
 
-            add_token(index, form, head, deprel)
+            dep_is_copy = bool(dep.dep().getOriginal())
+            gov_is_copy = bool(dep.gov().getOriginal())
+            if dep_is_copy or gov_is_copy:
+                extra = {}
+                if dep_is_copy:
+                    extra['dep_is_copy'] = True
+                if gov_is_copy:
+                    extra['gov_is_copy'] = True
+            else:
+                extra = None
+            add_token(index, form, head, deprel, extra)
             covered_indices.add(index)
         if include_erased:
             # see if there are any tokens that were erased
@@ -120,7 +130,7 @@ class JPypeBackend(StanfordDependencies):
                 form = indices_to_words[index].value()
                 if not include_punct and not self.puncFilter(form):
                     continue
-                add_token(index, form, head=0, deprel='erased')
+                add_token(index, form, head=0, deprel='erased', extra=None)
             # erased generally disrupt the ordering of the sentence
             sentence.sort()
 

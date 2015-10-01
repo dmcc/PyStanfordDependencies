@@ -31,7 +31,7 @@ def stringify_sentence(tokens):
 
     for token in tokens:
         new_fields = []
-        for field in CoNLL.FIELD_NAMES:
+        for field in CoNLL.FIELD_NAMES_PLUS:
             value = getattr(token, field)
             if isinstance(value, string_type):
                 value = str(value)
@@ -98,6 +98,9 @@ class DefaultBackendTest(unittest.TestCase):
                                 representation=representation)
         for representation, expected in self.trees.get_repr_test_tree5():
             self.assertConverts(self.trees.tree5, expected,
+                                representation=representation)
+        for representation, expected in self.trees.get_repr_test_tree8():
+            self.assertConverts(self.trees.tree8, expected,
                                 representation=representation)
     def test_punct_and_erased(self):
         self.assertConverts(self.trees.tree5,

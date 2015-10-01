@@ -18,15 +18,16 @@ ptb_tags_and_words_re = re.compile(r'\(\s*([^\s()]+)\s+([^\s()]+)\s*\)')
 
 # picks out (deprel, gov, govindex, dep, depindex) from Stanford
 # Dependencies text (e.g., "nsubj(word-1, otherword-2)")
-deps_re = re.compile(r'^\s*([^\s()]+)\(([^\s()]+)-(\d+),\s+'
-                     r'([^\s()]+)-(\d+)\)\s*$',
+deps_re = re.compile(r"^\s*([^\s()]+)\(([^\s()]+)-(\d+)('?),\s+"
+                     r"([^\s()]+)-(\d+)('?)\)\s*$",
                      re.M)
 
 # CoNLL-X field names
 FIELD_NAMES = ('index', 'form', 'lemma', 'cpos', 'pos', 'feats', 'head',
                'deprel', 'phead', 'pdeprel')
+FIELD_NAMES_PLUS = FIELD_NAMES + ('extra',)
 
-class Token(namedtuple('Token', FIELD_NAMES)):
+class Token(namedtuple('Token', FIELD_NAMES_PLUS)):
     """CoNLL-X style dependency token. Fields include:
     - form (the word form)
     - lemma (the word's base form or lemma) -- empty for SubprocessBackend
@@ -45,7 +46,8 @@ class Token(namedtuple('Token', FIELD_NAMES)):
         fields with empty values."""
         # slightly different from the official tuple __repr__ in that
         # we skip any fields with None as their value
-        items = [(field, getattr(self, field, None)) for field in FIELD_NAMES]
+        items = [(field, getattr(self, field, None))
+                 for field in FIELD_NAMES_PLUS]
         fields = ['%s=%r' % (k, v) for k, v in items if v is not None]
         return '%s(%s)' % (self.__class__.__name__, ', '.join(fields))
     def as_conll(self):
@@ -67,7 +69,8 @@ class Token(namedtuple('Token', FIELD_NAMES)):
         if fields[5] != '_': # feats
             fields[5] = tuple(fields[5].split('|'))
         fields = [value if value != '_' else None for value in fields]
-        return this_class(**dict(zip(FIELD_NAMES, fields)))
+        fields.append(None) # for extra
+        return this_class(**dict(zip(FIELD_NAMES_PLUS, fields)))
 
 class Sentence(list):
     """Sequence of Token objects."""
@@ -115,7 +118,7 @@ class Sentence(list):
         if len(roots) > 1:
             # multiple roots so we make a fake one to be their parent
             root = Token(0, 'ROOT', 'ROOT-LEMMA', 'ROOT-CPOS', 'ROOT-POS',
-                         None, None, 'ROOT-DEPREL', None, None)
+                         None, None, 'ROOT-DEPREL', None, None, None)
             token_to_index[root] = 0
             children[0] = roots
         else:
@@ -207,7 +210,8 @@ class Sentence(list):
                     continue
             matches = deps_re.findall(line)
             assert len(matches) == 1
-            deprel, gov_form, head, form, index = matches[0]
+            (deprel, gov_form, head, gov_is_copy, form, index,
+             dep_is_copy) = matches[0]
             index = int(index)
             tag, word = tags_and_words[index - 1]
             assert form == word
@@ -215,8 +219,16 @@ class Sentence(list):
 
             if not include_punct and deprel == 'punct':
                 continue
+            if gov_is_copy or dep_is_copy:
+                extra = {}
+                if gov_is_copy:
+                    extra['gov_is_copy'] = True
+                if dep_is_copy:
+                    extra['dep_is_copy'] = True
+            else:
+                extra = None
             token = Token(index, form, None, tag, tag, None, int(head),
-                          deprel, None, None)
+                          deprel, None, None, extra)
             sentence.append(token)
 
         if include_erased:
@@ -226,7 +238,7 @@ class Sentence(list):
                 if index in covered_indices:
                     continue
                 token = Token(index, word, None, tag, tag, None, 0,
-                              'erased', None, None)
+                              'erased', None, None, None)
                 sentence.append(token)
 
         sentence.sort()

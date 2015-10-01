@@ -86,9 +86,13 @@ class SubprocessBackend(StanfordDependencies):
                                                           include_punct)
         except:
             print("Error during conversion")
-            print("stdout:", stdout)
-            print("stderr:", stderr)
+            print("stdout: {%s}" % stdout)
+            print("stderr: {%s}" % stderr)
             raise
+
+        if debug:
+            print("stdout: {%s}" % stdout)
+            print("stderr: {%s}" % stderr)
 
         assert len(sentences) == len(ptb_trees), \
             "Only got %d sentences from Stanford Dependencies when " \

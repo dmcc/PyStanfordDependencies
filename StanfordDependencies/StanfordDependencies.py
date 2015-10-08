@@ -129,11 +129,13 @@ class StanfordDependencies:
         the full path for where the jar file should be installed."""
         import os
         import os.path
+        import errno
         install_dir = os.path.expanduser(INSTALL_DIR)
         try:
             os.makedirs(install_dir)
-        except OSError:
-            pass
+        except OSError as ose:
+            if ose.errno != errno.EEXIST:
+                raise ose
         jar_filename = os.path.join(install_dir, jar_base_filename)
         return jar_filename
     def download_if_missing(self, version=None, verbose=True):

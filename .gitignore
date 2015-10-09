@@ -8,3 +8,4 @@ dist*
 MANIFEST
 .coverage
 *,cover
+PyStanfordDependencies.egg-info/*

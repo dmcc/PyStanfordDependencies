@@ -8,3 +8,4 @@ glob:dist*
 glob:MANIFEST
 glob:.coverage
 glob:*,cover
+glob:PyStanfordDependencies.egg-info/*

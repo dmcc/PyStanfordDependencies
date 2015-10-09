@@ -13,7 +13,8 @@ Release checklist
 3.  Sync README.rst content with StanfordDependencies/__init__.py
     (roughly: vimdiff -g README.rst StanfordDependencies/__init__.py)
 4.  Run nosetests and flake8 again, commit changes
-5.  shell> python setup.py register sdist bdist_wheel upload
+5a. shell> python setup.py register sdist bdist_wheel upload
+5b. shell> python3 setup.py register bdist_wheel upload
 6.  Edit PyPI description, add keywords
 7.  Tag release on GitHub
 8.  ???

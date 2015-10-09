@@ -41,6 +41,10 @@ setup(name='PyStanfordDependencies',
       long_description=open('README.rst').read(),
       author='David McClosky',
       author_email='notsoweird+pystanforddependencies@gmail.com',
+      keywords='parsing, syntax, linguistics, language, artificial '
+               'intelligence, machine learning, NLP, natural language, '
+               'natural language processing, Stanford CoreNLP, '
+               'Stanford Dependencies, Universal Dependencies',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Science/Research',

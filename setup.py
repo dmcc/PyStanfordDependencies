@@ -50,4 +50,8 @@ setup(name='PyStanfordDependencies',
       license='Apache 2.0',
       platforms=['POSIX'],
       packages=['StanfordDependencies'],
+      extras_require={
+          'JPype': ['JPype1'],
+          'visualization': ['asciitree', 'graphviz'],
+      },
       cmdclass={'test': Test})

@@ -35,7 +35,7 @@ class Test(Command):
             raise SystemExit(exit_code)
 
 setup(name='PyStanfordDependencies',
-      version='0.2.0',
+      version='0.3.0',
       description='Python interface for converting Penn Treebank trees to '
                   'Stanford Dependencies',
       long_description=open('README.rst').read(),

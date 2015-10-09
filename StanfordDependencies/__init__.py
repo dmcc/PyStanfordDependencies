@@ -133,6 +133,7 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
+- 0.3.0 (2015.10.09): Support copy nodes, more input checking/debugging help
 - 0.2.0 (2015.08.02): Universal Dependencies support (mostly),
   Python 3 support (fully), minor API updates
 - 0.1.7 (2015.06.13): Bugfixes for JPype, handle version mismatches in IBM Java
@@ -155,5 +156,5 @@ __all__ = (StanfordDependencies, get_instance, JavaRuntimeVersionError,
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __email__ = 'notsoweird+pystanforddependencies@gmail.com'

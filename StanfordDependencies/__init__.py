@@ -17,7 +17,8 @@ PyStanfordDependencies
 
 Python interface for converting `Penn Treebank
 <http://www.cis.upenn.edu/~treebank/>`_ trees to `Stanford Dependencies
-<http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.
+<http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_ and
+`Universal Dependencies <http://universaldependencies.github.io/docs/>`_.
 
 Example usage
 -------------
@@ -119,7 +120,9 @@ PyStanfordDependencies mostly supports `Universal Dependencies
 <https://github.com/dmcc/PyStanfordDependencies/issues/10>`_ for the
 most up to date status). PyStanfordDependencies output matches Universal
 Dependencies in terms of structure and dependency labels, but Universal
-POS tags and features are missing.
+POS tags and features are missing. Currently, PyStanfordDependencies
+will output Universal Dependencies by default (unless you ask for an
+older version of Stanford CoreNLP).
 
 More information
 ----------------

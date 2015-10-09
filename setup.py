@@ -37,7 +37,7 @@ class Test(Command):
 setup(name='PyStanfordDependencies',
       version='0.3.0',
       description='Python interface for converting Penn Treebank trees to '
-                  'Stanford Dependencies',
+                  'Stanford Dependencies and Universal Dependencies',
       long_description=open('README.rst').read(),
       author='David McClosky',
       author_email='notsoweird+pystanforddependencies@gmail.com',

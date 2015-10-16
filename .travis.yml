@@ -1,28 +1,23 @@
 sudo: required
+dist: trusty
 
 language: python
 python:
   - "2.6"
   - "2.7"
   - "3.4"
+  - "3.5"
 
 cache:
   directories:
     - $HOME/.local/share/pystanforddeps
 
-before_install:
-  - sudo add-apt-repository --yes ppa:openjdk-r/ppa
-  - sudo apt-get update
 install:
-  - sudo apt-get purge oracle-java7-installer
-  - sudo apt-get install openjdk-8-jdk
-  - sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
   - pip install nose
   - pip install jpype1
   - pip install python-coveralls
   - pip install asciitree
   - pip install graphviz
-  - export LD_LIBRARY_PATH=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH
 before_script:
   - python --version
   - java -version

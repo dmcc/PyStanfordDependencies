@@ -113,14 +113,14 @@ class JPypeBackend(StanfordDependencies):
             deprel = dep.reln().toString()
             form = indices_to_words[index].value()
 
-            dep_is_copy = bool(dep.dep().getOriginal())
-            gov_is_copy = bool(dep.gov().getOriginal())
+            dep_is_copy = dep.dep().copyCount()
+            gov_is_copy = dep.gov().copyCount()
             if dep_is_copy or gov_is_copy:
                 extra = {}
                 if dep_is_copy:
-                    extra['dep_is_copy'] = True
+                    extra['dep_is_copy'] = dep_is_copy
                 if gov_is_copy:
-                    extra['gov_is_copy'] = True
+                    extra['gov_is_copy'] = gov_is_copy
             else:
                 extra = None
             add_token(index, form, head, deprel, extra)

@@ -18,8 +18,8 @@ ptb_tags_and_words_re = re.compile(r'\(\s*([^\s()]+)\s+([^\s()]+)\s*\)')
 
 # picks out (deprel, gov, govindex, dep, depindex) from Stanford
 # Dependencies text (e.g., "nsubj(word-1, otherword-2)")
-deps_re = re.compile(r"^\s*([^\s()]+)\(([^\s()]+)-(\d+)('?),\s+"
-                     r"([^\s()]+)-(\d+)('?)\)\s*$",
+deps_re = re.compile(r"^\s*([^\s()]+)\(([^\s()]+)-(\d+)('+)?,\s+"
+                     r"([^\s()]+)-(\d+)('+)?\)\s*$",
                      re.M)
 
 # CoNLL-X field names
@@ -40,6 +40,19 @@ class Token(namedtuple('Token', FIELD_NAMES_PLUS)):
     StanfordDependencies. Fields are immutable.
 
     See http://ilk.uvt.nl/conll/#dataformat for a complete description."""
+    def __lt__(self, other):
+        """Provides an ordering over Tokens. Tokens are compared by each
+        field in order."""
+        if not isinstance(other, Token):
+            raise TypeError("unorderable types: %s < %s" %
+                            (self.__class__.__name__,
+                             other.__class__.__name__))
+        self_fields = self[:-1]
+        other_fields = other[:-1]
+        if self_fields == other_fields:
+            return sorted(self.extra.items()) < sorted(other.extra.items())
+        else:
+            return self_fields < other_fields
     def __repr__(self):
         """Represent this Token as Python code. Note that the resulting
         representation may not be a valid Python call since this skips
@@ -222,9 +235,9 @@ class Sentence(list):
             if gov_is_copy or dep_is_copy:
                 extra = {}
                 if gov_is_copy:
-                    extra['gov_is_copy'] = True
+                    extra['gov_is_copy'] = len(gov_is_copy)
                 if dep_is_copy:
-                    extra['dep_is_copy'] = True
+                    extra['dep_is_copy'] = len(dep_is_copy)
             else:
                 extra = None
             token = Token(index, form, None, tag, tag, None, int(head),

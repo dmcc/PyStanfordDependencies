@@ -102,6 +102,9 @@ class DefaultBackendTest(unittest.TestCase):
         for representation, expected in self.trees.get_repr_test_tree8():
             self.assertConverts(self.trees.tree8, expected,
                                 representation=representation)
+        for representation, expected in self.trees.get_repr_test_tree9():
+            self.assertConverts(self.trees.tree9, expected,
+                                representation=representation)
     def test_punct_and_erased(self):
         self.assertConverts(self.trees.tree5,
                             self.trees.tree5_out_collapsedTree_no_punct,

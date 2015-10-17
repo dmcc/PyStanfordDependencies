@@ -420,26 +420,24 @@ Token(index=53, form='.', cpos='.', pos='.', head=11, deprel='punct')
                 (self.tree7, self.tree7_out), (self.tree8, self.tree8_out),
                 (self.tree9, self.tree9_out))
     @classmethod
-    def get_repr_test_tree2(self):
-        return sorted(dict(basic=self.tree2_out_basic, collapsed=self.tree2_out_collapsed,
-                           CCprocessed=self.tree2_out_CCprocessed,
-                           collapsedTree=self.tree2_out_collapsedTree).items())
-    @classmethod
-    def get_repr_test_tree4(self):
-        return sorted(dict(basic=self.tree4_out_basic, collapsed=self.tree4_out_collapsed,
+    def get_repr_test_trees(self):
+        return ((self.tree2,
+                 dict(basic=self.tree2_out_basic,
+                      collapsed=self.tree2_out_collapsed,
+                      CCprocessed=self.tree2_out_CCprocessed,
+                      collapsedTree=self.tree2_out_collapsedTree)),
+                (self.tree4,
+                 dict(basic=self.tree4_out_basic,
+                      collapsed=self.tree4_out_collapsed,
                       CCprocessed=self.tree4_out_CCprocessed,
-                      collapsedTree=self.tree4_out_collapsedTree).items())
-    @classmethod
-    def get_repr_test_tree5(self):
-        return sorted(dict(basic=self.tree5_out_basic, collapsed=self.tree5_out_collapsed,
-                           CCprocessed=self.tree5_out_CCprocessed,
-                           collapsedTree=self.tree5_out_collapsedTree).items())
-    @classmethod
-    def get_repr_test_tree8(self):
-        return sorted(dict(collapsed=self.tree8_out_collapsed).items())
-    @classmethod
-    def get_repr_test_tree9(self):
-        return sorted(dict(collapsed=self.tree9_out_collapsed).items())
+                      collapsedTree=self.tree4_out_collapsedTree)),
+                (self.tree5,
+                 dict(basic=self.tree5_out_basic,
+                      collapsed=self.tree5_out_collapsed,
+                      CCprocessed=self.tree5_out_CCprocessed,
+                      collapsedTree=self.tree5_out_collapsedTree)),
+                (self.tree8, dict(collapsed=self.tree8_out_collapsed)),
+                (self.tree9, dict(collapsed=self.tree9_out_collapsed)))
 
 # UD trees are similar to SD trees, but some parts are overridden
 class trees_ud(trees_sd):

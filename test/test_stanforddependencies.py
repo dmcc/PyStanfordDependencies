@@ -90,21 +90,10 @@ class DefaultBackendTest(unittest.TestCase):
         for tree, tokens, expected in zip(trees, sentences, expected_outputs):
             self.assertTokensMatch(tree, tokens, expected)
     def test_reprs(self):
-        for representation, expected in self.trees.get_repr_test_tree2():
-            self.assertConverts(self.trees.tree2, expected,
-                                representation=representation)
-        for representation, expected in self.trees.get_repr_test_tree4():
-            self.assertConverts(self.trees.tree4, expected,
-                                representation=representation)
-        for representation, expected in self.trees.get_repr_test_tree5():
-            self.assertConverts(self.trees.tree5, expected,
-                                representation=representation)
-        for representation, expected in self.trees.get_repr_test_tree8():
-            self.assertConverts(self.trees.tree8, expected,
-                                representation=representation)
-        for representation, expected in self.trees.get_repr_test_tree9():
-            self.assertConverts(self.trees.tree9, expected,
-                                representation=representation)
+        for tree, reprs in self.trees.get_repr_test_trees():
+            for representation, expected in sorted(reprs.items()):
+                self.assertConverts(tree, expected,
+                                    representation=representation)
     def test_punct_and_erased(self):
         self.assertConverts(self.trees.tree5,
                             self.trees.tree5_out_collapsedTree_no_punct,

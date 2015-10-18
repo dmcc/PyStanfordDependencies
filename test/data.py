@@ -412,13 +412,73 @@ Token(index=52, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=49, deprel='punct'
 Token(index=53, form='.', cpos='.', pos='.', head=11, deprel='punct')
     '''.strip()
 
+    tree10 = r'''
+(ROOT (NP (NP (NNP Hanoi) (, ,) (NNP May) (CD 13)) (PRN (-LRB- -LRB-) (NP (NNP VNA)) (-RRB- -RRB-)) (: --) (NP (NP (NNP Vietnam)) (SBAR (S (VP (VBZ has) (VP (VBN produced) (NP (NP (DT a) (NN variety)) (PP (IN of) (NP (NNS drugs)))) (S (VP (TO to) (VP (VB control) (NP (NNS HIV\/AIDS)) (PP (IN in) (NP (NP (NNS patients)) (VP (VBG suffering) (PP (IN with) (NP (DT the) (NN disease)))))))))))))) (. .)))
+    '''.strip()
+    tree10_out = '''
+Token(index=1, form='Hanoi', cpos='NNP', pos='NNP', head=3, deprel='nn')
+Token(index=2, form=',', cpos=',', pos=',', head=3, deprel='punct')
+Token(index=3, form='May', cpos='NNP', pos='NNP', head=0, deprel='root')
+Token(index=4, form='13', cpos='CD', pos='CD', head=3, deprel='num')
+Token(index=5, form='-LRB-', cpos='-LRB-', pos='-LRB-', head=6, deprel='punct')
+Token(index=6, form='VNA', cpos='NNP', pos='NNP', head=3, deprel='appos')
+Token(index=7, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=6, deprel='punct')
+Token(index=8, form='--', cpos=':', pos=':', head=3, deprel='punct')
+Token(index=9, form='Vietnam', cpos='NNP', pos='NNP', head=3, deprel='dep')
+Token(index=10, form='has', cpos='VBZ', pos='VBZ', head=11, deprel='aux')
+Token(index=11, form='produced', cpos='VBN', pos='VBN', head=9, deprel='rcmod')
+Token(index=12, form='a', cpos='DT', pos='DT', head=13, deprel='det')
+Token(index=13, form='variety', cpos='NN', pos='NN', head=11, deprel='dobj')
+Token(index=14, form='of', cpos='IN', pos='IN', head=13, deprel='prep')
+Token(index=15, form='drugs', cpos='NNS', pos='NNS', head=14, deprel='pobj')
+Token(index=16, form='to', cpos='TO', pos='TO', head=17, deprel='aux')
+Token(index=17, form='control', cpos='VB', pos='VB', head=11, deprel='vmod')
+Token(index=18, form='HIV/AIDS', cpos='NNS', pos='NNS', head=17, deprel='dobj')
+Token(index=19, form='in', cpos='IN', pos='IN', head=17, deprel='prep')
+Token(index=20, form='patients', cpos='NNS', pos='NNS', head=19, deprel='pobj')
+Token(index=21, form='suffering', cpos='VBG', pos='VBG', head=20, deprel='vmod')
+Token(index=22, form='with', cpos='IN', pos='IN', head=21, deprel='prep')
+Token(index=23, form='the', cpos='DT', pos='DT', head=24, deprel='det')
+Token(index=24, form='disease', cpos='NN', pos='NN', head=22, deprel='pobj')
+Token(index=25, form='.', cpos='.', pos='.', head=3, deprel='punct')
+    '''.strip()
+    tree10_out_collapsed = '''
+Token(index=1, form='Hanoi', cpos='NNP', pos='NNP', head=3, deprel='nn')
+Token(index=2, form=',', cpos=',', pos=',', head=3, deprel='punct')
+Token(index=3, form='May', cpos='NNP', pos='NNP', head=0, deprel='root')
+Token(index=4, form='13', cpos='CD', pos='CD', head=3, deprel='num')
+Token(index=5, form='-LRB-', cpos='-LRB-', pos='-LRB-', head=6, deprel='punct')
+Token(index=6, form='VNA', cpos='NNP', pos='NNP', head=3, deprel='appos')
+Token(index=7, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=6, deprel='punct')
+Token(index=8, form='--', cpos=':', pos=':', head=3, deprel='punct')
+Token(index=9, form='Vietnam', cpos='NNP', pos='NNP', head=3, deprel='dep')
+Token(index=10, form='has', cpos='VBZ', pos='VBZ', head=11, deprel='aux')
+Token(index=11, form='produced', cpos='VBN', pos='VBN', head=9, deprel='rcmod')
+Token(index=12, form='a', cpos='DT', pos='DT', head=13, deprel='det')
+Token(index=13, form='variety', cpos='NN', pos='NN', head=11, deprel='dobj')
+Token(index=15, form='drugs', cpos='NNS', pos='NNS', head=13, deprel='prep_of')
+Token(index=16, form='to', cpos='TO', pos='TO', head=17, deprel='aux')
+Token(index=17, form='control', cpos='VB', pos='VB', head=11, deprel='vmod')
+Token(index=18, form='HIV/AIDS', cpos='NNS', pos='NNS', head=17, deprel='dobj')
+Token(index=20, form='patients', cpos='NNS', pos='NNS', head=17, deprel='prep_in')
+Token(index=21, form='suffering', cpos='VBG', pos='VBG', head=20, deprel='vmod')
+Token(index=23, form='the', cpos='DT', pos='DT', head=24, deprel='det')
+Token(index=24, form='disease', cpos='NN', pos='NN', head=21, deprel='prep_with')
+Token(index=25, form='.', cpos='.', pos='.', head=3, deprel='punct')
+    '''.strip()
+
     @classmethod
     def get_basic_test_trees(self):
-        return ((self.tree1, self.tree1_out), (self.tree2, self.tree2_out_basic),
-                (self.tree3, self.tree3_out), (self.tree4, self.tree4_out_basic),
-                (self.tree5, self.tree5_out_basic), (self.tree6, self.tree6_out),
-                (self.tree7, self.tree7_out), (self.tree8, self.tree8_out),
-                (self.tree9, self.tree9_out))
+        return ((self.tree1, self.tree1_out),
+                (self.tree2, self.tree2_out_basic),
+                (self.tree3, self.tree3_out),
+                (self.tree4, self.tree4_out_basic),
+                (self.tree5, self.tree5_out_basic),
+                (self.tree6, self.tree6_out),
+                (self.tree7, self.tree7_out),
+                (self.tree8, self.tree8_out),
+                (self.tree9, self.tree9_out),
+                (self.tree10, self.tree10_out))
     @classmethod
     def get_repr_test_trees(self):
         return ((self.tree2,
@@ -437,7 +497,8 @@ Token(index=53, form='.', cpos='.', pos='.', head=11, deprel='punct')
                       CCprocessed=self.tree5_out_CCprocessed,
                       collapsedTree=self.tree5_out_collapsedTree)),
                 (self.tree8, dict(collapsed=self.tree8_out_collapsed)),
-                (self.tree9, dict(collapsed=self.tree9_out_collapsed)))
+                (self.tree9, dict(collapsed=self.tree9_out_collapsed)),
+                (self.tree10, dict(collapsed=self.tree10_out_collapsed)))
 
 # UD trees are similar to SD trees, but some parts are overridden
 class trees_ud(trees_sd):
@@ -771,4 +832,59 @@ Token(index=50, form='per', cpos='IN', pos='IN', head=51, deprel='case')
 Token(index=51, form='hectare', cpos='NN', pos='NN', head=49, deprel='nmod:per')
 Token(index=52, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=49, deprel='punct')
 Token(index=53, form='.', cpos='.', pos='.', head=11, deprel='punct')
+    '''.strip()
+
+    tree10_out = '''
+Token(index=1, form='Hanoi', cpos='NNP', pos='NNP', head=3, deprel='compound')
+Token(index=2, form=',', cpos=',', pos=',', head=3, deprel='punct')
+Token(index=3, form='May', cpos='NNP', pos='NNP', head=0, deprel='root')
+Token(index=4, form='13', cpos='CD', pos='CD', head=3, deprel='nummod')
+Token(index=5, form='-LRB-', cpos='-LRB-', pos='-LRB-', head=6, deprel='punct')
+Token(index=6, form='VNA', cpos='NNP', pos='NNP', head=3, deprel='appos')
+Token(index=7, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=6, deprel='punct')
+Token(index=8, form='--', cpos=':', pos=':', head=3, deprel='punct')
+Token(index=9, form='Vietnam', cpos='NNP', pos='NNP', head=3, deprel='dep')
+Token(index=10, form='has', cpos='VBZ', pos='VBZ', head=11, deprel='aux')
+Token(index=11, form='produced', cpos='VBN', pos='VBN', head=9, deprel='acl:relcl')
+Token(index=12, form='a', cpos='DT', pos='DT', head=13, deprel='det')
+Token(index=13, form='variety', cpos='NN', pos='NN', head=11, deprel='dobj')
+Token(index=14, form='of', cpos='IN', pos='IN', head=15, deprel='case')
+Token(index=15, form='drugs', cpos='NNS', pos='NNS', head=13, deprel='nmod')
+Token(index=16, form='to', cpos='TO', pos='TO', head=17, deprel='mark')
+Token(index=17, form='control', cpos='VB', pos='VB', head=11, deprel='advcl')
+Token(index=18, form='HIV/AIDS', cpos='NNS', pos='NNS', head=17, deprel='dobj')
+Token(index=19, form='in', cpos='IN', pos='IN', head=20, deprel='case')
+Token(index=20, form='patients', cpos='NNS', pos='NNS', head=17, deprel='nmod')
+Token(index=21, form='suffering', cpos='VBG', pos='VBG', head=20, deprel='acl')
+Token(index=22, form='with', cpos='IN', pos='IN', head=24, deprel='case')
+Token(index=23, form='the', cpos='DT', pos='DT', head=24, deprel='det')
+Token(index=24, form='disease', cpos='NN', pos='NN', head=21, deprel='nmod')
+Token(index=25, form='.', cpos='.', pos='.', head=3, deprel='punct')
+    '''.strip()
+    tree10_out_collapsed = '''
+Token(index=1, form='Hanoi', cpos='NNP', pos='NNP', head=3, deprel='compound')
+Token(index=2, form=',', cpos=',', pos=',', head=3, deprel='punct')
+Token(index=3, form='May', cpos='NNP', pos='NNP', head=0, deprel='root')
+Token(index=4, form='13', cpos='CD', pos='CD', head=3, deprel='nummod')
+Token(index=5, form='-LRB-', cpos='-LRB-', pos='-LRB-', head=6, deprel='punct')
+Token(index=6, form='VNA', cpos='NNP', pos='NNP', head=3, deprel='appos')
+Token(index=7, form='-RRB-', cpos='-RRB-', pos='-RRB-', head=6, deprel='punct')
+Token(index=8, form='--', cpos=':', pos=':', head=3, deprel='punct')
+Token(index=9, form='Vietnam', cpos='NNP', pos='NNP', head=3, deprel='dep')
+Token(index=10, form='has', cpos='VBZ', pos='VBZ', head=11, deprel='aux')
+Token(index=11, form='produced', cpos='VBN', pos='VBN', head=9, deprel='acl:relcl')
+Token(index=12, form='a', cpos='DT', pos='DT', head=13, deprel='det')
+Token(index=13, form='variety', cpos='NN', pos='NN', head=11, deprel='dobj')
+Token(index=14, form='of', cpos='IN', pos='IN', head=15, deprel='case')
+Token(index=15, form='drugs', cpos='NNS', pos='NNS', head=13, deprel='nmod:of')
+Token(index=16, form='to', cpos='TO', pos='TO', head=17, deprel='mark')
+Token(index=17, form='control', cpos='VB', pos='VB', head=11, deprel='advcl')
+Token(index=18, form='HIV/AIDS', cpos='NNS', pos='NNS', head=17, deprel='dobj')
+Token(index=19, form='in', cpos='IN', pos='IN', head=20, deprel='case')
+Token(index=20, form='patients', cpos='NNS', pos='NNS', head=17, deprel='nmod:in')
+Token(index=21, form='suffering', cpos='VBG', pos='VBG', head=20, deprel='acl')
+Token(index=22, form='with', cpos='IN', pos='IN', head=24, deprel='case')
+Token(index=23, form='the', cpos='DT', pos='DT', head=24, deprel='det')
+Token(index=24, form='disease', cpos='NN', pos='NN', head=21, deprel='nmod:with')
+Token(index=25, form='.', cpos='.', pos='.', head=3, deprel='punct')
     '''.strip()

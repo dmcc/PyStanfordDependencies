@@ -226,6 +226,7 @@ class Sentence(list):
                     break
                 else:
                     continue
+            line = line.replace(r'\/', '/')
             matches = deps_re.findall(line)
             assert len(matches) == 1
             (deprel, gov_form, head, gov_is_copy, form, index,

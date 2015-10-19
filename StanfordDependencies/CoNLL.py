@@ -49,8 +49,13 @@ class Token(namedtuple('Token', FIELD_NAMES_PLUS)):
                              other.__class__.__name__))
         self_fields = self[:-1]
         other_fields = other[:-1]
+        def get_extra(token):
+            if token.extra is None:
+                return []
+            else:
+                return sorted(token.extra.items())
         if self_fields == other_fields:
-            return sorted(self.extra.items()) < sorted(other.extra.items())
+            return get_extra(self) < get_extra(other)
         else:
             return self_fields < other_fields
     def __repr__(self):

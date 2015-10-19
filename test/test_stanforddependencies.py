@@ -44,38 +44,36 @@ class BackendCreation(unittest.TestCase):
         sd = StanfordDependencies.get_instance(backend='subprocess',
                                                version='3.4.1',
                                                download_if_missing=True)
-        self.assertIsInstance(sd, SubprocessBackend)
+        assert isinstance(sd, SubprocessBackend)
     def test_subprocess_backend_creation_shortcut(self):
         sd = get_instance(backend='subprocess', version='3.4.1',
                           download_if_missing=True)
-        self.assertIsInstance(sd, SubprocessBackend)
+        assert isinstance(sd, SubprocessBackend)
     def test_subprocess_backend_creation_newest_version(self):
         sd = get_instance(backend='subprocess', version=None,
                           download_if_missing=True)
-        self.assertIsInstance(sd, SubprocessBackend)
+        assert isinstance(sd, SubprocessBackend)
     def test_jpype_backend_creation(self):
         sd = StanfordDependencies.get_instance(backend='jpype',
                                                version='3.5.2',
                                                download_if_missing=True)
-        self.assertIsInstance(sd, JPypeBackend), \
+        assert isinstance(sd, JPypeBackend), \
                "Fell back to another backend due to a JPype error"
     def test_backend_bad_jar_filename(self):
-        with self.assertRaises(ValueError):
-            StanfordDependencies.get_instance('')
-        with self.assertRaises(ValueError):
-            # please don't mkdir this :)
-            p = '/path/that/does/not/exist'
-            from os.path import exists
-            assert not exists(p)
-            StanfordDependencies.get_instance(p)
-        with self.assertRaises(TypeError):
-            StanfordDependencies.get_instance({})
-        with self.assertRaises(TypeError):
-            StanfordDependencies.get_instance(3)
-        with self.assertRaises(TypeError):
-            StanfordDependencies.get_instance(open)
-        with self.assertRaises(TypeError):
-            StanfordDependencies.get_instance(len)
+        self.assertRaises(ValueError,
+                          StanfordDependencies.get_instance,
+                          '')
+
+        # please don't mkdir this :)
+        p = '/path/that/does/not/exist'
+        from os.path import exists
+        assert not exists(p)
+        self.assertRaises(ValueError, StanfordDependencies.get_instance, p)
+
+        self.assertRaises(TypeError, StanfordDependencies.get_instance, {})
+        self.assertRaises(TypeError, StanfordDependencies.get_instance, 3)
+        self.assertRaises(TypeError, StanfordDependencies.get_instance, open)
+        self.assertRaises(TypeError, StanfordDependencies.get_instance, len)
 
 class DefaultBackendTest(unittest.TestCase):
     backend = None

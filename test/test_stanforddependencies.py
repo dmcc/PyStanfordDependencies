@@ -175,6 +175,8 @@ class DefaultBackendTest(unittest.TestCase):
         self.assertRaises(TypeError, self.sd.get_jar_url, -1)
         self.assertRaises(TypeError, self.sd.get_jar_url, 10)
         self.assertRaises(TypeError, self.sd.get_jar_url, (3, 5, 0))
+        self.assertRaises(TypeError, self.sd.get_jar_url, {})
+        self.assertRaises(TypeError, self.sd.get_jar_url, len)
 
     #
     # helper functions

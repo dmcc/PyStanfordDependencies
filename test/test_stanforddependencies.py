@@ -39,28 +39,43 @@ def stringify_sentence(tokens):
         new_tokens.append(CoNLL.Token(*new_fields))
     return '\n'.join(repr(token) for token in new_tokens)
 
-def test_subprocess_backend_creation():
-    sd = StanfordDependencies.get_instance(backend='subprocess',
-                                           version='3.4.1',
-                                           download_if_missing=True)
-    assert isinstance(sd, SubprocessBackend)
-
-def test_subprocess_backend_creation_shortcut():
-    sd = get_instance(backend='subprocess', version='3.4.1',
-                      download_if_missing=True)
-    assert isinstance(sd, SubprocessBackend)
-
-def test_subprocess_backend_creation_newest_version():
-    sd = get_instance(backend='subprocess', version=None,
-                      download_if_missing=True)
-    assert isinstance(sd, SubprocessBackend)
-
-def test_jpype_backend_creation():
-    sd = StanfordDependencies.get_instance(backend='jpype',
-                                           version='3.5.2',
-                                           download_if_missing=True)
-    assert isinstance(sd, JPypeBackend), \
-           "Fell back to another backend due to a JPype error"
+class BackendCreation(unittest.TestCase):
+    def test_subprocess_backend_creation(self):
+        sd = StanfordDependencies.get_instance(backend='subprocess',
+                                               version='3.4.1',
+                                               download_if_missing=True)
+        self.assertIsInstance(sd, SubprocessBackend)
+    def test_subprocess_backend_creation_shortcut(self):
+        sd = get_instance(backend='subprocess', version='3.4.1',
+                          download_if_missing=True)
+        self.assertIsInstance(sd, SubprocessBackend)
+    def test_subprocess_backend_creation_newest_version(self):
+        sd = get_instance(backend='subprocess', version=None,
+                          download_if_missing=True)
+        self.assertIsInstance(sd, SubprocessBackend)
+    def test_jpype_backend_creation(self):
+        sd = StanfordDependencies.get_instance(backend='jpype',
+                                               version='3.5.2',
+                                               download_if_missing=True)
+        self.assertIsInstance(sd, JPypeBackend), \
+               "Fell back to another backend due to a JPype error"
+    def test_backend_bad_jar_filename(self):
+        with self.assertRaises(ValueError):
+            StanfordDependencies.get_instance('')
+        with self.assertRaises(ValueError):
+            # please don't mkdir this :)
+            p = '/path/that/does/not/exist'
+            from os.path import exists
+            assert not exists(p)
+            StanfordDependencies.get_instance(p)
+        with self.assertRaises(TypeError):
+            StanfordDependencies.get_instance({})
+        with self.assertRaises(TypeError):
+            StanfordDependencies.get_instance(3)
+        with self.assertRaises(TypeError):
+            StanfordDependencies.get_instance(open)
+        with self.assertRaises(TypeError):
+            StanfordDependencies.get_instance(len)
 
 class DefaultBackendTest(unittest.TestCase):
     backend = None

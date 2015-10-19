@@ -12,6 +12,7 @@
 
 from __future__ import print_function
 from abc import ABCMeta, abstractmethod
+import os.path
 
 try:
     from urllib import FancyURLopener
@@ -128,7 +129,6 @@ class StanfordDependencies:
         it is writable (that is, make sure the directory exists). Returns
         the full path for where the jar file should be installed."""
         import os
-        import os.path
         import errno
         install_dir = os.path.expanduser(INSTALL_DIR)
         try:
@@ -144,7 +144,6 @@ class StanfordDependencies:
         exists. version defaults to DEFAULT_CORENLP_VERSION (ideally the
         latest but we can't guarantee that since PyStanfordDependencies
         is distributed separately)."""
-        import os.path
         if os.path.exists(self.jar_filename):
             return
 
@@ -171,6 +170,18 @@ class StanfordDependencies:
         a str or basestring (depending on Python version)."""
         if not isinstance(ptb_tree, string_type):
             raise TypeError("ptb_tree is not a string: %r" % ptb_tree)
+
+    @staticmethod
+    def _raise_on_bad_jar_filename(jar_filename):
+        """Ensure that jar_filename is a valid path to a jar file."""
+        if jar_filename is None:
+            return
+
+        if not isinstance(jar_filename, string_type):
+            raise TypeError("jar_filename is not a string: %r" % jar_filename)
+
+        if not os.path.exists(jar_filename):
+            raise ValueError("jar_filename does not exist: %r" % jar_filename)
 
     @staticmethod
     def get_jar_url(version=None):
@@ -222,6 +233,7 @@ class StanfordDependencies:
         If the above options are confusing, don't panic! You can leave
         them all blank -- get_instance() is designed to provide the best
         and latest available conversion settings by default."""
+        StanfordDependencies._raise_on_bad_jar_filename(jar_filename)
         extra_args.update(jar_filename=jar_filename,
                           download_if_missing=download_if_missing,
                           version=version)

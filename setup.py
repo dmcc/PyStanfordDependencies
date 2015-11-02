@@ -23,7 +23,8 @@ class Test(Command):
     def finalize_options(self):
         pass
     def run(self):
-        self.run_command('flake8', 'StanfordDependencies')
+        self.run_command('flake8', '--ignore=E301,E302,E261',
+                         'StanfordDependencies')
         self.run_command('nosetests-2.7', '-dvx')
         self.run_command('nosetests-3.4', '-dvx')
     def run_command(self, *args):

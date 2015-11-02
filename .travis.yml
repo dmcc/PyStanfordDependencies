@@ -13,16 +13,13 @@ cache:
     - $HOME/.local/share/pystanforddeps
 
 install:
-  - pip install nose
-  - pip install jpype1
-  - pip install python-coveralls
-  - pip install asciitree
-  - pip install graphviz
+  - pip install nose jpype1 python-coveralls asciitree graphviz flake8
 before_script:
   - python --version
   - java -version
 script:
   - pip install .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies
+  - flake8 --ignore=E301,E302,E261 StanfordDependencies
 after_success:
   - coveralls

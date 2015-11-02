@@ -16,9 +16,10 @@ PyStanfordDependencies
 ======================
 
 Python interface for converting `Penn Treebank
-<http://www.cis.upenn.edu/~treebank/>`_ trees to `Stanford Dependencies
-<http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_ and
-`Universal Dependencies <http://universaldependencies.github.io/docs/>`_.
+<http://www.cis.upenn.edu/~treebank/>`_ trees to `Universal
+Dependencies <http://universaldependencies.github.io/docs/>`_
+and `Stanford Dependencies
+<http://nlp.stanford.edu/software/stanford-dependencies.shtml>`_.
 
 Example usage
 -------------
@@ -103,11 +104,12 @@ Backends
 --------
 Currently PyStanfordDependencies includes two backends:
 
-- ``subprocess`` (works anywhere with a ``java`` binary, slow so
-  batched conversions with ``convert_trees()`` are recommended)
+- ``subprocess`` (works anywhere with a ``java`` binary, but more
+  overhead so batched conversions with ``convert_trees()`` are
+  recommended)
 - ``jpype`` (requires `jpype1 <https://pypi.python.org/pypi/JPype1>`_,
-  faster than Subprocess, includes access to the Stanford CoreNLP
-  lemmatizer)
+  faster than the subprocess backend, also includes access to the Stanford
+  CoreNLP lemmatizer)
 
 By default, PyStanfordDependencies will attempt to use the ``jpype``
 backend. If ``jpype`` isn't available or crashes on startup,
@@ -115,14 +117,21 @@ PyStanfordDependencies will fallback to ``subprocess`` with a warning.
 
 Universal Dependencies status
 -----------------------------
-PyStanfordDependencies mostly supports `Universal Dependencies
+PyStanfordDependencies supports most features in `Universal Dependencies
 <http://universaldependencies.github.io/docs/>`_ (see `issue #10
 <https://github.com/dmcc/PyStanfordDependencies/issues/10>`_ for the
 most up to date status). PyStanfordDependencies output matches Universal
 Dependencies in terms of structure and dependency labels, but Universal
-POS tags and features are missing. Currently, PyStanfordDependencies
-will output Universal Dependencies by default (unless you ask for an
-older version of Stanford CoreNLP).
+POS tags and features are missing. Currently, PyStanfordDependencies will
+output Universal Dependencies by default (unless you're using Stanford
+CoreNLP 3.5.1 or earlier).
+
+Related projects
+----------------
+- `clearnlp-converter <https://pypi.python.org/pypi/clearnlp-converter/>`_
+  (uses `clearnlp <http://www.clearnlp.com/>`_ instead of `Stanford
+  CoreNLP <http://nlp.stanford.edu/software/corenlp.shtml>`_ for
+  dependency conversion)
 
 More information
 ----------------
@@ -136,19 +145,22 @@ Bug reports and feature requests: `GitHub issue tracker
 
 Release summaries
 -----------------
-- 0.3.0 (2015.10.09): Support copy nodes, more input checking/debugging help
+- 0.3.1 (2015.11.02): Better collapsed universal handling, bugfixes
+- 0.3.0 (2015.10.09): Support copy nodes, more input checking/debugging
+  help, example ``convert.py`` program
 - 0.2.0 (2015.08.02): Universal Dependencies support (mostly),
   Python 3 support (fully), minor API updates
-- 0.1.7 (2015.06.13): Bugfixes for JPype, handle version mismatches in IBM Java
-- 0.1.6 (2015.02.12): Support for graphviz formatting, CoreNLP 3.5.1,
+- 0.1.7 (2015.06.13): Bugfixes for ``JPype``, handle version mismatches
+  in IBM Java
+- 0.1.6 (2015.02.12): Support for ``graphviz`` formatting, CoreNLP 3.5.1,
   better Windows portability
 - 0.1.5 (2015.01.10): Support for ASCII tree formatting
-- 0.1.4 (2015.01.07): Fix CCprocessed support
+- 0.1.4 (2015.01.07): Fix ``CCprocessed`` support
 - 0.1.3 (2015.01.03): Bugfixes, coveralls integration, refactoring
 - 0.1.2 (2015.01.02): Better CoNLL structures, test suite and Travis CI
   support, bugfixes
 - 0.1.1 (2014.12.15): More docs, fewer bugs
-- 0.1 (2014.12.14): Initial version
+- 0.1 (2014.12.14): Initial release
 """
 
 from .StanfordDependencies import (StanfordDependencies, get_instance,
@@ -159,5 +171,5 @@ __all__ = (StanfordDependencies, get_instance, JavaRuntimeVersionError,
 
 __authors__ = 'David McClosky'
 __license__ = 'Apache 2.0'
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 __email__ = 'notsoweird+pystanforddependencies@gmail.com'

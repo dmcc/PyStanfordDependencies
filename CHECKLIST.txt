@@ -1,21 +1,17 @@
 Release checklist
 -----------------
 0a. Ensure latest version of Stanford CoreNLP is set properly
-0b. shell> python setup.py build
-0c. shell> python setup.py test
-    Or to run commands manually:
-        shell> flake8 StanfordDependencies
-        (we currently set flake8's ignore = E301,E302,E261)
-        Ensure tests are passing: shell> nosetests-2.7 -dvx
-                             and: shell> nosetests-3.4 -dvx
+0b. Build and test in all available Python versions:
+        shell> tox
+0c. Check formatting:
+        shell> flake8 --ignore=E301,E302,E261 StanfordDependencies
 1.  Version bumps in StanfordDependencies/__init__.py and setup.py
 2.  Update release history in README.rst
 3.  Sync README.rst content with StanfordDependencies/__init__.py
     (roughly: vimdiff -g README.rst StanfordDependencies/__init__.py)
-4.  Run nosetests and flake8 again, commit changes
-5a. shell> python setup.py register sdist bdist_wheel upload
+4.  Run tox again, commit changes, ensure Travis CI passes
+5a. shell> python2 setup.py register sdist bdist_wheel upload
 5b. shell> python3 setup.py register bdist_wheel upload
-6.  Edit PyPI description, add keywords
-7.  Tag release on GitHub
-8.  ???
-9.  Goto 0a
+6.  Tag release on GitHub
+7.  ???
+8.  Goto 0a

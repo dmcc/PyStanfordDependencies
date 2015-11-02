@@ -9,3 +9,4 @@ MANIFEST
 .coverage
 *,cover
 PyStanfordDependencies.egg-info/*
+.tox/*

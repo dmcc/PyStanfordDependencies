@@ -68,7 +68,14 @@ class JPypeBackend(StanfordDependencies):
             # (in other words, we have a universal converter)
             assert "No matching overloads found" in str(re)
 
-        self.stemmer = self.corenlp.process.Morphology.stemStaticSynchronized
+        try:
+            self.stemmer = \
+                self.corenlp.process.Morphology.stemStaticSynchronized
+        except AttributeError:
+            # stemStaticSynchronized was renamed in CoreNLP 3.6.0 to stemStatic
+            self.stemmer = \
+                self.corenlp.process.Morphology.stemStatic
+
         puncFilterInstance = trees.PennTreebankLanguagePack(). \
             punctuationWordRejectFilter()
         try:

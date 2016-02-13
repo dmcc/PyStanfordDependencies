@@ -1,6 +1,7 @@
 Release checklist
 -----------------
 0a. Ensure latest version of Stanford CoreNLP is set properly
+    (DEFAULT_CORENLP_VERSION in StanfordDependencies/StanfordDependencies.py)
 0b. Build and test in all available Python versions:
         shell> tox
 0c. Check formatting:

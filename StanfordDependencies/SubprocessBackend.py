@@ -55,6 +55,7 @@ class SubprocessBackend(StanfordDependencies):
                 tree_with_line_break = ptb_tree + "\n"
                 input_file.write(tree_with_line_break.encode("utf-8"))
             input_file.flush()
+            input_file.close()
 
             command = [self.java_command,
                        '-ea',

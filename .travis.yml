@@ -3,7 +3,6 @@ dist: trusty
 
 language: python
 python:
-  - "2.6"
   - "2.7"
   - "3.4"
   - "3.5"
@@ -20,6 +19,6 @@ before_script:
 script:
   - pip install .
   - nosetests -v --with-coverage --cover-package=StanfordDependencies
-  - flake8 --ignore=E301,E302,E261 StanfordDependencies
+  - flake8 --ignore=E301,E302,E305,E306,E261 StanfordDependencies
 after_success:
   - coveralls

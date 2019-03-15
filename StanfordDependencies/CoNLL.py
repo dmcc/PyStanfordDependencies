@@ -39,7 +39,9 @@ class Token(namedtuple('Token', FIELD_NAMES_PLUS)):
     There are other fields but they typically won't be populated by
     StanfordDependencies. Fields are immutable.
 
-    See http://ilk.uvt.nl/conll/#dataformat for a complete description."""
+    See CoNLL-X shared task on Multilingual Dependency Parsing by Buchholz and Marsi(2006)
+        http://aclweb.org/anthology/W06-2920 (Section 3: Data format, task definition)
+    for a complete description."""
     def __lt__(self, other):
         """Provides an ordering over Tokens. Tokens are compared by each
         field in order."""
